@@ -29,11 +29,11 @@ class StatsOverviewWidget extends BaseWidget
         $todayBookings = Order::whereDate('booking_start', $today)->count();
 
         // Estadísticas de ingresos
-        $totalRevenue = Order::where('status', 'completed')->sum('total');
-        $monthlyRevenue = Order::where('status', 'completed')
+        $totalRevenue = Order::whereIn('status', ['completed', 'processing'])->sum('total');
+        $monthlyRevenue = Order::whereIn('status', ['completed', 'processing'])
             ->whereBetween('created_at', [$thisMonth, $thisMonthEnd])
             ->sum('total');
-        $todayRevenue = Order::where('status', 'completed')
+        $todayRevenue = Order::whereIn('status', ['completed', 'processing'])
             ->whereDate('created_at', $today)
             ->sum('total');
 

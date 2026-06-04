@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\ProductTimeslot;
 use App\Models\Product;
 use App\Models\Inventory;
+use App\Services\OrderDataMigrationService;
 use Carbon\Carbon;
 use WpOrg\Requests\Requests;
 use Illuminate\Support\Facades\Log;
@@ -53,6 +54,7 @@ class WooOrderController extends Controller
             }
 
             $detailsData = $orderDetails->getData()->data;
+            $dataDetails = $orderDetails->getData();
             
             // Logear los datos obtenidos para debugging
             Log::info('Datos de orden obtenidos', [
@@ -62,26 +64,24 @@ class WooOrderController extends Controller
                 'line_items_count' => isset($detailsData->line_items) ? count($detailsData->line_items) : 0
             ]);
             
-            // Extraer appointment_id de los meta_data
+            // Extraer appointment_id de las order notes
             $appointmentId = null;
             $bookingStart = null;
             $bookingEnd = null;
             
-            foreach ($detailsData->line_items as $item) {
-                if (isset($item->meta_data)) {
-                    foreach ($item->meta_data as $meta) {
-                        if ($meta->key === '_appointment_id' && !empty($meta->value)) {
-                            $appointmentId = is_array($meta->value) ? $meta->value[0] : $meta->value;
-                            
-                            Log::info('Appointment ID encontrado', [
-                                'appointment_id' => $appointmentId,
-                                'meta_type' => gettype($meta->value),
-                                'meta_value' => $meta->value
-                            ]);
-                            
-                            break 2; // Salir de ambos loops
-                        }
-                    }
+            // Acceder correctamente a order_notes desde el objeto anidado
+            $orderNotes = $dataDetails->order_notes ?? [];
+            
+            foreach ($orderNotes as $note) {
+                if (isset($note->note) && preg_match('/Appointment #(\d+)/', $note->note, $matches)) {
+                    $appointmentId = $matches[1];
+                    
+                    Log::info('Appointment ID encontrado en order notes', [
+                        'appointment_id' => $appointmentId,
+                        'note_text' => $note->note
+                    ]);
+                    
+                    break; // Salir del loop una vez encontrado
                 }
             }
 
@@ -152,21 +152,53 @@ class WooOrderController extends Controller
                 $product_id = $first_item['product_id'] ?? null;
             }
 
-            // Guardar pedido en nuestra BD con los datos de booking
-            $order = Order::updateOrCreate(
-                ['woocommerce_order_id' => $payload['id']],
-                [
-                    'product_id' => $product_id,
-                    'status' => $payload['status'],
-                    'customer_name' => $payload['billing']['first_name'] ?? null,
-                    'customer_email' => $payload['billing']['email'] ?? null,
-                    'total' => $payload['total'] ?? 0,
-                    'booking_start' => $bookingStart ? Carbon::parse($bookingStart) : null,
-                    'booking_end' => $bookingEnd ? Carbon::parse($bookingEnd) : null,
-                    'created_at' => Carbon::parse($payload['date_created']),
-                    'updated_at' => Carbon::parse($payload['date_modified']),
-                ]
-            );
+            // Guardar pedido en nuestra BD usando el servicio de migración
+            try {
+                $migrationService = new OrderDataMigrationService();
+                
+                // Preparar datos completos para el servicio
+                $completeData = [
+                    'success' => true,
+                    'data' => $detailsData,
+                    'order_notes' => $orderNotes
+                ];
+                
+                $order = $migrationService->createOrderFromWooData($completeData);
+                
+                // Agregar campos adicionales que no están en el servicio
+                $order->booking_start = $bookingStart ? Carbon::parse($bookingStart) : null;
+                $order->booking_end = $bookingEnd ? Carbon::parse($bookingEnd) : null;
+                $order->created_at = Carbon::parse($payload['date_created']);
+                $order->updated_at = Carbon::parse($payload['date_modified']);
+                
+                // Guardar manteniendo el JSON como respaldo (opcional)
+                $order->data = $dataDetails;
+                
+                $order->save();
+                
+            } catch (\Exception $e) {
+                Log::error('Error creando orden con OrderDataMigrationService', [
+                    'error' => $e->getMessage(),
+                    'order_id' => $payload['id']
+                ]);
+                
+                // Fallback al método anterior si falla
+                $order = Order::updateOrCreate(
+                    ['woocommerce_order_id' => $payload['id']],
+                    [
+                        'product_id' => $product_id,
+                        'status' => $payload['status'],
+                        'customer_name' => $payload['billing']['first_name'] ?? null,
+                        'customer_email' => $payload['billing']['email'] ?? null,
+                        'total' => $payload['total'] ?? 0,
+                        'booking_start' => $bookingStart ? Carbon::parse($bookingStart) : null,
+                        'booking_end' => $bookingEnd ? Carbon::parse($bookingEnd) : null,
+                        'data' => $dataDetails,
+                        'created_at' => Carbon::parse($payload['date_created']),
+                        'updated_at' => Carbon::parse($payload['date_modified']),
+                    ]
+                );
+            }
 
             Log::info('Orden sincronizada exitosamente', [
                 'order_id' => $payload['id'],
@@ -175,14 +207,6 @@ class WooOrderController extends Controller
                 'booking_end' => $bookingEnd
             ]);
 
-            // Guardar los productos y actualizar disponibilidad
-            foreach ($payload['line_items'] as $item) {
-                $product = Product::where('wordpress_product_id', $item['product_id'])->first();
-                if ($product) {
-                    // Aquí podrías actualizar inventario o slots
-                    $product->decrement('default_capacity', $item['quantity']);
-                }
-            }
 
             return response()->json(['success' => true]);
         } catch (\Throwable $e) {

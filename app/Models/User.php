@@ -65,6 +65,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if user is cocina
+     */
+    public function isCocina(): bool
+    {
+        return $this->role === 'cocina';
+    }
+
+    /**
      * Get role label
      */
     public function getRoleLabelAttribute(): string
@@ -72,6 +80,7 @@ class User extends Authenticatable
         return match($this->role) {
             'admin' => 'Administrador',
             'gestor' => 'Gestor',
+            'cocina' => 'Cocina',
             default => 'Desconocido',
         };
     }

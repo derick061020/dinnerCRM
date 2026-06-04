@@ -1045,6 +1045,394 @@
             appearance: none;
         }
         
+        /* Responsive Mobile Styles */
+        @media (max-width: 768px) {
+            .menu-container {
+                flex-direction: column;
+                height: auto;
+                padding: 16px;
+            }
+            
+            .list-container {
+                width: 100%;
+                padding: 0;
+                margin-bottom: 20px;
+            }
+            
+            .panel-container {
+                width: 100%;
+                min-height: 500px;
+            }
+            
+            .panel-content {
+                border-radius: 20px;
+                padding: 0;
+            }
+            
+            .panel-top-bar {
+                padding: 16px 20px;
+                height: 50px;
+            }
+            
+            .product-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+            }
+            
+            .product-name {
+                font-size: 14px;
+            }
+            
+            .product-status {
+                font-size: 11px;
+            }
+            
+            .close-button {
+                width: 32px;
+                height: 32px;
+            }
+            
+            .panel-body {
+                padding: 20px;
+                margin-top: 50px;
+            }
+            
+            /* Hide table design in mobile */
+            .table-view-button,
+            .table-view-overlay {
+                display: none !important;
+            }
+            
+            /* Show simple mobile table */
+            .mobile-table {
+                display: block !important;
+                background: var(--bg-primary);
+                border-radius: 16px;
+                padding: 16px;
+                margin-top: 20px;
+                border: 1px solid var(--border-primary);
+            }
+            
+            .mobile-table-title {
+                font-size: 16px;
+                font-weight: 600;
+                color: var(--text-primary);
+                margin-bottom: 16px;
+            }
+            
+            .mobile-table-grid {
+                display: grid;
+                grid-template-columns: repeat(7, 1fr);
+                gap: 4px;
+                margin-bottom: 16px;
+            }
+            
+            .mobile-table-shape {
+                grid-column: span 7;
+                background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+                border-radius: 12px;
+                padding: 12px;
+                text-align: center;
+                color: white;
+                font-weight: 600;
+                font-size: 14px;
+                margin-bottom: 12px;
+            }
+            
+            .mobile-seats-container {
+                display: grid;
+                grid-template-columns: repeat(7, 1fr);
+                gap: 3px;
+            }
+            
+            .mobile-seat {
+                aspect-ratio: 1;
+                border-radius: 6px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 600;
+                font-size: 10px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            
+            .mobile-seat.empty {
+                background: var(--bg-secondary);
+                border: 1px solid var(--border-primary);
+                color: var(--text-secondary);
+            }
+            
+            .mobile-seat.occupied {
+                background: linear-gradient(135deg, var(--accent-blue-light), var(--accent-blue));
+                border: 1px solid var(--accent-blue);
+                color: white;
+            }
+            
+            .mobile-table-legend {
+                display: flex;
+                gap: 16px;
+                justify-content: center;
+                margin-top: 12px;
+            }
+            
+            .mobile-legend-item {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 12px;
+                color: var(--text-secondary);
+            }
+            
+            .mobile-legend-seat {
+                width: 16px;
+                height: 16px;
+                border-radius: 4px;
+            }
+            
+            .mobile-legend-seat.empty {
+                background: var(--bg-secondary);
+                border: 1px solid var(--border-primary);
+            }
+            
+            .mobile-legend-seat.occupied {
+                background: linear-gradient(135deg, var(--accent-blue-light), var(--accent-blue));
+                border: 1px solid var(--accent-blue);
+            }
+            
+            .mobile-seat-info {
+                animation: slideUp 0.3s ease;
+            }
+            
+            @keyframes slideUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            .mobile-seat-info-overlay {
+                animation: fadeIn 0.3s ease;
+            }
+            
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+            
+            .tabs-container {
+                padding: 6px;
+                margin-bottom: 16px;
+            }
+            
+            .tab-button {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+            
+            .schedule-editor {
+                padding: 16px;
+            }
+            
+            .schedule-section-title {
+                font-size: 15px;
+                margin-bottom: 16px;
+            }
+            
+            .time-slot-item {
+                padding: 12px;
+                margin-bottom: 8px;
+            }
+            
+            .time-input {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .menu-container {
+                padding: 12px;
+            }
+            
+            .list-header {
+                margin-bottom: 16px;
+            }
+            
+            .list-title {
+                font-size: 18px;
+            }
+            
+            .list-subtitle {
+                font-size: 13px;
+            }
+            
+            .items-wrapper {
+                max-height: 300px;
+            }
+            
+            .item-content {
+                padding: 14px 16px;
+            }
+            
+            .item-name {
+                font-size: 14px;
+            }
+            
+            .item-description {
+                font-size: 12px;
+            }
+            
+            .item-indicator {
+                width: 24px;
+                height: 24px;
+                margin-left: 12px;
+            }
+            
+            .panel-content {
+                border-radius: 16px;
+            }
+            
+            .panel-top-bar {
+                padding: 12px 16px;
+                height: 45px;
+            }
+            
+            .product-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 12px;
+            }
+            
+            .product-name {
+                font-size: 13px;
+            }
+            
+            .product-status {
+                font-size: 10px;
+            }
+            
+            .close-button {
+                width: 28px;
+                height: 28px;
+            }
+            
+            .panel-body {
+                padding: 16px;
+                margin-top: 45px;
+            }
+            
+            /* Hide table design in mobile */
+            .table-view-button,
+            .table-view-overlay {
+                display: none !important;
+            }
+            
+            .table-layout {
+                display: none !important;
+            }
+            /* Show simple mobile table */
+            .mobile-table {
+                display: block !important;
+                padding: 12px;
+            }
+            
+            .mobile-table-title {
+                font-size: 14px;
+                margin-bottom: 12px;
+            }
+            
+            .mobile-table-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 2px;
+            }
+            
+            .mobile-table-shape {
+                font-size: 12px;
+                padding: 8px;
+                margin-bottom: 8px;
+            }
+            
+            .mobile-seats-container {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 2px;
+            }
+            
+            .mobile-seat {
+                font-size: 8px;
+                aspect-ratio: 1.2;
+            }
+            
+            .mobile-table-legend {
+                gap: 12px;
+                margin-top: 8px;
+            }
+            
+            .mobile-legend-item {
+                font-size: 11px;
+            }
+            
+            .mobile-legend-seat {
+                width: 12px;
+                height: 12px;
+            }
+            
+            .tabs-container {
+                flex-direction: column;
+                padding: 4px;
+            }
+            
+            .tab-button {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+            
+            .schedule-editor {
+                padding: 12px;
+            }
+            
+            .schedule-section-title {
+                font-size: 14px;
+                margin-bottom: 12px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .time-slot-item {
+                padding: 10px;
+                margin-bottom: 6px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .time-input {
+                padding: 6px 10px;
+                font-size: 12px;
+                width: 100%;
+            }
+            .reservations-header-content{
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+        
+        /* Hide mobile table by default (show only on mobile) */
+        .mobile-table {
+            display: none;
+        }
+        
         
         /* Remove arrows from option elements */
         select.time-input option {
@@ -1569,100 +1957,152 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 30px;
+            gap: 18px;
             margin-bottom: 24px;
         }
-        
+
+        /* Indicador de capacidad global */
+        .capacity-bar-wrap {
+            width: 100%;
+            max-width: 540px;
+            margin-bottom: 6px;
+        }
+        .capacity-bar-top {
+            display: flex; align-items: center; justify-content: space-between;
+            font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px;
+        }
+        .capacity-bar-top strong { color: var(--text-primary); }
+        .capacity-bar {
+            height: 10px; border-radius: 999px; background: var(--bg-secondary);
+            overflow: hidden; border: 1px solid var(--border-tertiary);
+        }
+        .capacity-bar-fill {
+            height: 100%; border-radius: 999px;
+            background: linear-gradient(90deg, #34d399, #10b981);
+            transition: width .5s cubic-bezier(.2,.8,.2,1);
+        }
+        .capacity-bar-fill.busy { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
+        .capacity-bar-fill.full { background: linear-gradient(90deg, #f87171, #ef4444); }
+
         .table-simple {
-            width: 400px;
-            height: 80px;
-            background: #6b7280;
-            border-radius: 8px;
+            width: 100%;
+            max-width: 540px;
+            height: 70px;
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 10px;
             color: white;
-            font-weight: 600;
-            font-size: 16px;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 0.08em;
+            box-shadow: 0 10px 28px rgba(124, 58, 237, 0.28);
         }
-        
+        .table-simple::before { content: '🍽️'; font-size: 22px; }
+
         .seats-simple {
             display: grid;
             grid-template-columns: repeat(11, 1fr);
-            gap: 15px;
+            gap: 10px;
             width: 100%;
-            max-width: 500px;
+            max-width: 540px;
         }
-        
+
         .seats-top-simple, .seats-bottom-simple {
             display: grid;
             grid-template-columns: repeat(11, 1fr);
-            gap: 15px;
+            gap: 10px;
             width: 100%;
-            max-width: 500px;
+            max-width: 540px;
         }
-        
+
         .seat-simple {
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
+            aspect-ratio: 1;
+            width: 100%;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
-            font-size: 0px;
+            font-weight: 700;
+            font-size: 14px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(.2,.8,.2,1);
             position: relative;
             border: 2px solid;
         }
-        
+
         .seat-simple.empty {
-            background: white;
-            border-color: #d1d5db;
-            color: #6b7280;
+            background: var(--bg-secondary);
+            border-color: var(--border-primary);
+            border-style: dashed;
+            color: var(--text-tertiary);
+            font-size: 11px;
         }
-        
+
         .seat-simple.empty:hover {
-            background: #f3f4f6;
+            background: var(--bg-tertiary);
             border-color: #3b82f6;
+            color: #3b82f6;
+            transform: translateY(-2px);
         }
-        
+
         .seat-simple.occupied {
-            background: #3b82f6;
-            border-color: #2563eb;
+            background: linear-gradient(135deg, #60a5fa, #2563eb);
+            border-color: #1d4ed8;
             color: white;
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.32);
         }
-        
+
         .seat-simple.occupied:hover {
-            background: #2563eb;
-            transform: scale(1.1);
+            transform: translateY(-3px) scale(1.06);
+            box-shadow: 0 10px 22px rgba(37, 99, 235, 0.45);
+        }
+        /* Punto de estado para asiento ocupado */
+        .seat-simple.occupied::after {
+            content: '';
+            position: absolute;
+            top: 4px; right: 4px;
+            width: 7px; height: 7px; border-radius: 50%;
+            background: #34d399;
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.85);
         }
         
         .seat-tooltip-simple {
             position: absolute;
-            bottom: 100%;
+            bottom: calc(100% + 10px);
             left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            padding: 8px;
-            min-width: 150px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateX(-50%) translateY(4px);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            padding: 12px 14px;
+            min-width: 180px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
             opacity: 0;
             visibility: hidden;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(.2,.8,.2,1);
             z-index: 1000;
-            font-size: 11px;
-            line-height: 1.3;
-            margin-bottom: 8px;
-            color: #000000;
+            font-size: 12px;
+            line-height: 1.5;
+            color: var(--text-primary);
+            text-align: left;
         }
-        
+        .seat-tooltip-simple::after {
+            content: '';
+            position: absolute;
+            top: 100%; left: 50%;
+            transform: translateX(-50%);
+            border: 7px solid transparent;
+            border-top-color: var(--bg-primary);
+        }
+        .seat-tooltip-simple strong { font-size: 13px; }
+
         .seat-simple:hover .seat-tooltip-simple {
             opacity: 1;
             visibility: visible;
+            transform: translateX(-50%) translateY(0);
         }
         
         .table-legend {
@@ -1876,7 +2316,7 @@
                         <div class="tab-content {{ $activeTab === 'reservations' ? 'active' : '' }}">
                             <div class="reservations-container">
                                 <div class="reservations-header">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                                    <div class="reservations-header-content" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                                         <div>
                                             <h3 style="font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">
                                                 Reservas Activas - {{ $selectedDate ? \Carbon\Carbon::parse($selectedDate)->format('d/m/Y') : date('d/m/Y') }}
@@ -1911,46 +2351,73 @@
                                     </div>
                                 </div>
                                 
+                                @php
+                                    $occupiedCount = collect($this->tableSeats)->where('occupied', true)->count();
+                                    $totalSeats = count($this->tableSeats) ?: 1;
+                                    $occupancyPct = round(($occupiedCount / $totalSeats) * 100);
+                                    $capClass = $occupancyPct >= 85 ? 'full' : ($occupancyPct >= 50 ? 'busy' : '');
+                                    $initial = fn($name) => mb_strtoupper(mb_substr(trim($name ?? '?'), 0, 1));
+                                @endphp
+
                                 <div class="table-layout">
+                                    <!-- Barra de capacidad -->
+                                    <div class="capacity-bar-wrap">
+                                        <div class="capacity-bar-top">
+                                            <span>Ocupación de la mesa</span>
+                                            <span><strong>{{ $occupiedCount }}</strong> / {{ $totalSeats }} · {{ $occupancyPct }}%</span>
+                                        </div>
+                                        <div class="capacity-bar">
+                                            <div class="capacity-bar-fill {{ $capClass }}" style="width: {{ $occupancyPct }}%;"></div>
+                                        </div>
+                                    </div>
+
                                     <!-- Asientos superiores -->
                                     <div class="seats-top-simple">
                                         @for($i = 1; $i <= 11; $i++)
                                             @if(isset($this->tableSeats[$i]))
-                                                <div 
+                                                <div
                                                     wire:click="goToCustomer({{ $i }})"
                                                     class="seat-simple {{ $this->tableSeats[$i]['occupied'] ? 'occupied' : 'empty' }}"
                                                 >
                                                     @if($this->tableSeats[$i]['occupied'])
+                                                        {{ $initial($this->tableSeats[$i]['customer']['name']) }}
                                                         <div class="seat-tooltip-simple">
                                                             <strong>{{ $this->tableSeats[$i]['customer']['name'] }}</strong><br>
+                                                            🪑 Asiento {{ $i }}<br>
                                                             🕐 {{ $this->tableSeats[$i]['customer']['time'] }}<br>
                                                             📞 {{ $this->tableSeats[$i]['customer']['phone'] }}
                                                         </div>
+                                                    @else
+                                                        {{ $i }}
                                                     @endif
                                                 </div>
                                             @endif
                                         @endfor
                                     </div>
-                                    
+
                                     <!-- Mesa rectangular simple -->
                                     <div class="table-simple">
-                                        MESA
+                                        MESA PRINCIPAL
                                     </div>
-                                    
+
                                     <!-- Asientos inferiores -->
                                     <div class="seats-bottom-simple">
                                         @for($i = 12; $i <= 22; $i++)
                                             @if(isset($this->tableSeats[$i]))
-                                                <div 
+                                                <div
                                                     wire:click="goToCustomer({{ $i }})"
                                                     class="seat-simple {{ $this->tableSeats[$i]['occupied'] ? 'occupied' : 'empty' }}"
                                                 >
                                                     @if($this->tableSeats[$i]['occupied'])
+                                                        {{ $initial($this->tableSeats[$i]['customer']['name']) }}
                                                         <div class="seat-tooltip-simple">
                                                             <strong>{{ $this->tableSeats[$i]['customer']['name'] }}</strong><br>
+                                                            🪑 Asiento {{ $i }}<br>
                                                             🕐 {{ $this->tableSeats[$i]['customer']['time'] }}<br>
                                                             📞 {{ $this->tableSeats[$i]['customer']['phone'] }}
                                                         </div>
+                                                    @else
+                                                        {{ $i }}
                                                     @endif
                                                 </div>
                                             @endif
@@ -1969,21 +2436,105 @@
                                     </div>
                                 </div>
                                 
-                                <div style="background: #f8f9fa; border-radius: 8px; padding: 16px; border: 1px solid #e9ecef; margin-top: 20px;">
-                                    <div style="font-size: 14px; color: #495057; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-                                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                                        </svg>
-                                        Estadísticas del Día
+                                <div style="background: var(--bg-secondary); border-radius: 16px; padding: 18px; border: 1px solid var(--border-tertiary); margin-top: 20px;">
+                                    <div style="font-size: 14px; color: var(--text-primary); font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+                                        📊 Estadísticas del Día
                                     </div>
-                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                                        <div style="background: white; border-radius: 6px; padding: 12px; border: 1px solid #dee2e6;">
-                                            <div style="font-size: 12px; color: #6c757d; margin-bottom: 4px;">Mesas Ocupadas</div>
-                                            <div style="font-size: 18px; color: #212529; font-weight: 600;">{{ collect($this->tableSeats)->where('occupied', true)->count() }} / {{ count($this->tableSeats) }}</div>
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px;">
+                                        <div style="background: var(--bg-primary); border-radius: 12px; padding: 14px; border: 1px solid var(--border-primary); display:flex; align-items:center; gap:12px;">
+                                            <span style="font-size:24px;">🪑</span>
+                                            <div>
+                                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 2px;">Ocupados</div>
+                                                <div style="font-size: 20px; color: var(--text-primary); font-weight: 800;">{{ $occupiedCount }} / {{ $totalSeats }}</div>
+                                            </div>
                                         </div>
-                                        <div style="background: white; border-radius: 6px; padding: 12px; border: 1px solid #dee2e6;">
-                                            <div style="font-size: 12px; color: #6c757d; margin-bottom: 4px;">Disponibilidad</div>
-                                            <div style="font-size: 18px; color: #212529; font-weight: 600;">{{ round((collect($this->tableSeats)->where('occupied', false)->count() / count($this->tableSeats)) * 100, 1) }}%</div>
+                                        <div style="background: var(--bg-primary); border-radius: 12px; padding: 14px; border: 1px solid var(--border-primary); display:flex; align-items:center; gap:12px;">
+                                            <span style="font-size:24px;">✅</span>
+                                            <div>
+                                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 2px;">Disponibles</div>
+                                                <div style="font-size: 20px; color: var(--text-primary); font-weight: 800;">{{ $totalSeats - $occupiedCount }}</div>
+                                            </div>
+                                        </div>
+                                        <div style="background: var(--bg-primary); border-radius: 12px; padding: 14px; border: 1px solid var(--border-primary); display:flex; align-items:center; gap:12px;">
+                                            <span style="font-size:24px;">📈</span>
+                                            <div>
+                                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 2px;">Ocupación</div>
+                                                <div style="font-size: 20px; color: var(--text-primary); font-weight: 800;">{{ $occupancyPct }}%</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Mobile Simple Table (hidden on desktop, shown on mobile) -->
+                                <div class="mobile-table">
+                                    <div class="mobile-table-title">🪑 Vista de Mesas Simplificada</div>
+                                    
+                                    <div class="mobile-table-grid">
+                                        <div class="mobile-table-shape">MESA PRINCIPAL</div>
+                                    </div>
+                                    
+                                    <div class="mobile-seats-container">
+                                        @for($i = 1; $i <= 35; $i++)
+                                            @if(isset($this->tableSeats[$i]))
+                                                @if($this->tableSeats[$i]['occupied'])
+                                                    <div class="mobile-seat occupied" wire:click="toggleSeatInfo('{{ $i }}')" style="cursor: pointer; position: relative;">
+                                                        {{ $i }}
+                                                        
+                                                        <!-- Mobile Seat Info Tooltip -->
+                                                        @if($this->showSeatInfo == $i)
+                                                        <div class="mobile-seat-info-overlay" wire:click="toggleSeatInfo('null')" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;">
+                                                            <div class="mobile-seat-info" wire:click.stop style="background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: 16px; padding: 20px; max-width: 320px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: slideUp 0.3s ease;">
+                                                                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 12px; font-size: 16px; text-align: center;">
+                                                                    🪑 Asiento {{ $i }}
+                                                                </div>
+                                                                <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px; text-align: center;">
+                                                                    <strong>{{ $this->tableSeats[$i]['customer']['name'] }}</strong>
+                                                                </div>
+                                                                <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; text-align: center;">
+                                                                    🕐 {{ $this->tableSeats[$i]['customer']['time'] }}
+                                                                </div>
+                                                                <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; text-align: center;">
+                                                                    📞 {{ $this->tableSeats[$i]['customer']['phone'] }}
+                                                                </div>
+                                                                <div style="display: flex; gap: 12px;">
+                                                                    <button 
+                                                                        wire:click="goToCustomer('{{ $i }}')"
+                                                                        style="flex: 1; padding: 12px 16px; background: var(--accent-blue); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;"
+                                                                    >
+                                                                        Ver Orden
+                                                                    </button>
+                                                                    <button 
+                                                                        wire:click="toggleSeatInfo('null')"
+                                                                        style="flex: 1; padding: 12px 16px; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-primary); border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;"
+                                                                    >
+                                                                        Cerrar
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        @endif
+                                                    </div>
+                                                @else
+                                                    <div class="mobile-seat empty" style="cursor: default;">
+                                                        {{ $i }}
+                                                    </div>
+                                                @endif
+                                            @else
+                                                <div class="mobile-seat empty" style="cursor: default;">
+                                                    {{ $i }}
+                                                </div>
+                                            @endif
+                                        @endfor
+                                    </div>
+                                    
+                                    <div class="mobile-table-legend">
+                                        <div class="mobile-legend-item">
+                                            <div class="mobile-legend-seat empty"></div>
+                                            <span>Disponible</span>
+                                        </div>
+                                        <div class="mobile-legend-item">
+                                            <div class="mobile-legend-seat occupied"></div>
+                                            <span>Ocupado</span>
                                         </div>
                                     </div>
                                 </div>

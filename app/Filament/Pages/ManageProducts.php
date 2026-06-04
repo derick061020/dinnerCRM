@@ -28,6 +28,7 @@ class ManageProducts extends Page implements HasForms
     public $selectedDate = null;
     public $showTableView = false;
     public $currentCustomSchedule = null;
+    public $showSeatInfo = null;
 
     // Productos desde WooCommerce
     public $testItems = [];
@@ -70,7 +71,7 @@ class ManageProducts extends Page implements HasForms
 
     protected function initializeTableSeats(): void
     {
-        // Inicializar 22 asientos (11 superiores, 11 inferiores)
+        // Inicializar 35 asientos (para la vista móvil)
         $this->tableSeats = [];
         
         // Usar la fecha seleccionada o hoy por defecto
@@ -89,7 +90,7 @@ class ManageProducts extends Page implements HasForms
         // Distribuir órdenes en los asientos
         $seatNumber = 1;
         foreach ($ordersForDate as $order) {
-            if ($seatNumber <= 22) {
+            if ($seatNumber <= 35) {
                 // Usar la hora de booking_start o created_at como fallback
                 $bookingTime = $order->booking_start ? Carbon::parse($order->booking_start) : $order->created_at;
                 
@@ -110,7 +111,7 @@ class ManageProducts extends Page implements HasForms
         }
 
         // Llenar los asientos restantes como vacíos
-        for ($i = 1; $i <= 22; $i++) {
+        for ($i = 1; $i <= 35; $i++) {
             if (!isset($this->tableSeats[$i])) {
                 $this->tableSeats[$i] = [
                     'occupied' => false,
@@ -283,6 +284,9 @@ class ManageProducts extends Page implements HasForms
 
     public function goToCustomer($seatNumber): void
     {
+        // Convert string parameter to integer if needed
+        $seatNumber = (int)$seatNumber;
+        
         if (isset($this->tableSeats[$seatNumber]) && $this->tableSeats[$seatNumber]['occupied']) {
             $orderId = $this->tableSeats[$seatNumber]['order_id'];
             // Redirigir a la página de detalles de la orden
@@ -312,6 +316,25 @@ class ManageProducts extends Page implements HasForms
             ->title('Mesas actualizadas')
             ->body('La ocupación de las mesas ha sido recargada')
             ->send();
+    }
+
+    public function toggleSeatInfo($seatNumber): void
+    {
+        // Handle the 'null' string case properly
+        if ($seatNumber === 'null' || $seatNumber === null) {
+            $this->showSeatInfo = null;
+            return;
+        }
+        
+        // Convert string parameter to integer
+        $seatNumber = (int)$seatNumber;
+        
+        // Toggle seat info visibility
+        if ($this->showSeatInfo === $seatNumber) {
+            $this->showSeatInfo = null;
+        } else {
+            $this->showSeatInfo = $seatNumber;
+        }
     }
 
     public function saveSchedules(): void

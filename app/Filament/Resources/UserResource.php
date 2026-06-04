@@ -75,10 +75,11 @@ class UserResource extends Resource
                             ->options([
                                 'admin' => 'Administrador',
                                 'gestor' => 'Gestor',
+                                'cocina' => 'Cocina',
                             ])
                             ->required()
                             ->default('gestor')
-                            ->helperText('Admin: Acceso completo a todos los recursos. Gestor: Acceso limitado.'),
+                            ->helperText('Admin: Acceso completo a todos los recursos. Gestor: Acceso limitado. Cocina: Acceso a operaciones de cocina.'),
 
                         Forms\Components\TextInput::make('password')
                             ->label('Contraseña')
@@ -123,6 +124,7 @@ class UserResource extends Resource
                     ->color(fn (string $state): string => match ($state) {
                         'Administrador' => 'danger',
                         'Gestor' => 'warning',
+                        'Cocina' => 'success',
                         default => 'gray',
                     })
                     ->sortable()
@@ -146,6 +148,7 @@ class UserResource extends Resource
                     ->options([
                         'admin' => 'Administrador',
                         'gestor' => 'Gestor',
+                        'cocina' => 'Cocina',
                     ]),
 
                 Tables\Filters\Filter::make('created_today')

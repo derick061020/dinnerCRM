@@ -81,33 +81,21 @@ class PendingOrdersWidget extends BaseWidget
                     ->url(fn (Order $record): string => '/orders/' . $record->id)
                     ->openUrlInNewTab(false),
                     
-                Action::make('process')
-                    ->label('Procesar')
-                    ->icon('heroicon-m-arrow-path')
-                    ->color('warning')
-                    ->action(function (Order $record) {
-                        $record->update(['status' => 'processing']);
-                        
-                        \Filament\Notifications\Notification::make()
-                            ->success()
-                            ->title('Orden procesada')
-                            ->body("La orden #{$record->id} ahora está en proceso")
-                            ->send();
-                    }),
-                    
-                Action::make('complete')
-                    ->label('Completar')
-                    ->icon('heroicon-m-check-circle')
+                Action::make('whatsapp')
+                    ->label('WhatsApp')
+                    ->icon('heroicon-m-device-phone-mobile')
                     ->color('success')
-                    ->action(function (Order $record) {
-                        $record->update(['status' => 'completed']);
-                        
-                        \Filament\Notifications\Notification::make()
-                            ->success()
-                            ->title('Orden completada')
-                            ->body("La orden #{$record->id} ha sido completada")
-                            ->send();
-                    }),
+                    ->url(fn (Order $record): string => $this->generateWhatsAppUrl($record))
+                    ->openUrlInNewTab(true),
+                    
+                Action::make('email')
+                    ->label('Email')
+                    ->icon('heroicon-m-envelope')
+                    ->color('info')
+                    ->url(fn (Order $record): string => $this->generateEmailUrl($record))
+                    ->openUrlInNewTab(true),
+                    
+                
                     
                 Action::make('cancel')
                     ->label('Cancelar')
@@ -158,5 +146,96 @@ class PendingOrdersWidget extends BaseWidget
     protected function getTableRecordsPerPageSelectOptions(): array
     {
         return [10, 25, 50];
+    }
+    
+    /**
+     * Generate WhatsApp URL for customer contact
+     */
+    protected function generateWhatsAppUrl(Order $record): string
+    {
+        $phone = $this->extractPhoneNumber($record);
+        $message = $this->generateWhatsAppMessage($record);
+        
+        // Remove any non-digit characters from phone number
+        $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
+        
+        // Format: https://wa.me/phone?text=message
+        return "https://wa.me/{$cleanPhone}?text=" . urlencode($message);
+    }
+    
+    /**
+     * Generate Email URL for customer contact
+     */
+    protected function generateEmailUrl(Order $record): string
+    {
+        $email = $record->customer_email;
+        $subject = "Información sobre tu orden #{$record->id}";
+        $body = $this->generateEmailBody($record);
+        
+        return "mailto:{$email}?subject=" . urlencode($subject) . "&body=" . urlencode($body);
+    }
+    
+    /**
+     * Extract phone number from order data
+     */
+    protected function extractPhoneNumber(Order $record): string
+    {
+        // Try to get phone from customer data or order notes
+        $phone = '';
+        
+        // Check if there's phone in customer data (you might need to adjust this based on your data structure)
+        if (!empty($record->customer_phone)) {
+            $phone = $record->customer_phone;
+        }
+        
+        // If no phone found, return a default or empty string
+        return $phone ?: '';
+    }
+    
+    /**
+     * Generate WhatsApp message
+     */
+    protected function generateWhatsAppMessage(Order $record): string
+    {
+        $message = "Hola {$record->customer_name},\n\n";
+        $message .= "Te contacto desde el sistema sobre tu orden #{$record->id}.\n\n";
+        $message .= "📋 Detalles de la orden:\n";
+        $message .= "• Producto: " . ($record->product?->name ?? 'N/A') . "\n";
+        $message .= '• Total: $'.$record->total."\n";
+        
+        if ($record->booking_start) {
+            $message .= "• Fecha de reserva: " . Carbon::parse($record->booking_start)->format('d/m/Y H:i') . "\n";
+        }
+        
+        $message .= "\nPor favor, contáctanos si tienes alguna pregunta.\n";
+        $message .= "¡Gracias!";
+        
+        return $message;
+    }
+    
+    /**
+     * Generate email body
+     */
+    protected function generateEmailBody(Order $record): string
+    {
+        $body = "Estimado/a {$record->customer_name},\n\n";
+        $body .= "Te escribimos desde nuestro sistema sobre tu orden #{$record->id}.\n\n";
+        $body .= "Detalles de la orden:\n";
+        $body .= "------------------\n";
+        $body .= "ID de Orden: {$record->id}\n";
+        $body .= "Producto: " . ($record->product?->name ?? 'N/A') . "\n";
+        $body .= '• Total: $'.$record->total."\n";
+        
+        if ($record->booking_start) {
+            $body .= "Fecha de reserva: " . Carbon::parse($record->booking_start)->format('d/m/Y H:i') . "\n";
+        }
+        
+        $body .= "Fecha de creación: " . $record->created_at->format('d/m/Y H:i') . "\n";
+        $body .= "------------------\n\n";
+        $body .= "Si tienes alguna pregunta sobre tu orden, no dudes en contactarnos.\n\n";
+        $body .= "Saludos cordiales,\n";
+        $body .= "El equipo de soporte";
+        
+        return $body;
     }
 }
