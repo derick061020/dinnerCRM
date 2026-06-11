@@ -90,8 +90,8 @@ class WooOrderController extends Controller
             if ($appointmentId) {
                 try {
                     // Usar el endpoint correcto que funciona
-                    $appointmentUrl = "https://dev.puntacanadinnerintheskyrd.com/wp-json/wc-appointments/v1/appointments/{$appointmentId}";
-                    $auth = 'Basic ' . base64_encode('ck_86c1fcde56db9be52be54ef80cb5fdcd73655934:cs_6d8fafab71cd34b6253257457cbcca4415955658');
+                    $appointmentUrl = config('woocommerce.base_url') . "/wp-json/wc-appointments/v1/appointments/{$appointmentId}";
+                    $auth = config('woocommerce.auth');
                     
                     Log::info('Obteniendo appointment con endpoint correcto', [
                         'appointment_id' => $appointmentId,
@@ -222,10 +222,10 @@ class WooOrderController extends Controller
     // 2. Endpoint para obtener detalles completos desde WooCommerce
     public function getOrderDetails($woocommerce_order_id)
     {
-        $url = "https://dev.puntacanadinnerintheskyrd.com/wp-json/wc/v3/orders/{$woocommerce_order_id}";
+        $url = config('woocommerce.base_url') . "/wp-json/wc/v3/orders/{$woocommerce_order_id}";
 
         $response = Requests::get($url, [
-            'Authorization' => 'Basic ' . base64_encode('ck_86c1fcde56db9be52be54ef80cb5fdcd73655934:cs_6d8fafab71cd34b6253257457cbcca4415955658')
+            'Authorization' => config('woocommerce.auth')
         ]);
 
         if(!$response->success){
@@ -235,10 +235,10 @@ class WooOrderController extends Controller
         $body = json_decode($response->body, true);
 
         // Obtener las order notes del pedido
-        $notes_url = "https://dev.puntacanadinnerintheskyrd.com/wp-json/wc/v3/orders/{$woocommerce_order_id}/notes";
-        
+        $notes_url = config('woocommerce.base_url') . "/wp-json/wc/v3/orders/{$woocommerce_order_id}/notes";
+
         $notes_response = Requests::get($notes_url, [
-            'Authorization' => 'Basic ' . base64_encode('ck_86c1fcde56db9be52be54ef80cb5fdcd73655934:cs_6d8fafab71cd34b6253257457cbcca4415955658')
+            'Authorization' => config('woocommerce.auth')
         ]);
 
         $order_notes = [];

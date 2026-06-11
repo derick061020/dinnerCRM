@@ -194,7 +194,7 @@ class ImportWooOrders extends Command
      */
     private function getWooOrders($status, $limit, $maxRetries = 3)
     {
-        $url = "https://dev.puntacanadinnerintheskyrd.com/wp-json/wc/v3/orders";
+        $url = config('woocommerce.base_url') . "/wp-json/wc/v3/orders";
         
         $params = [
             'per_page' => $limit,
@@ -381,7 +381,7 @@ class ImportWooOrders extends Command
      */
     private function getOrdersPage($page, $perPage, $status, $maxRetries = 3)
     {
-        $url = "https://dev.puntacanadinnerintheskyrd.com/wp-json/wc/v3/orders";
+        $url = config('woocommerce.base_url') . "/wp-json/wc/v3/orders";
         
         $params = [
             'per_page' => $perPage,
@@ -413,7 +413,7 @@ class ImportWooOrders extends Command
         $perPage = 100;
         
         do {
-            $url = "https://dev.puntacanadinnerintheskyrd.com/wp-json/wc/v3/orders";
+            $url = config('woocommerce.base_url') . "/wp-json/wc/v3/orders";
             
             $params = [
                 'per_page' => $perPage,
@@ -469,10 +469,10 @@ class ImportWooOrders extends Command
      */
     private function getOrderDetails($woocommerce_order_id)
     {
-        $url = "https://dev.puntacanadinnerintheskyrd.com/wp-json/wc/v3/orders/{$woocommerce_order_id}";
+        $url = config('woocommerce.base_url') . "/wp-json/wc/v3/orders/{$woocommerce_order_id}";
 
         $response = Requests::get($url, [
-            'Authorization' => 'Basic ' . base64_encode('ck_86c1fcde56db9be52be54ef80cb5fdcd73655934:cs_6d8fafab71cd34b6253257457cbcca4415955658')
+            'Authorization' => config('woocommerce.auth')
         ]);
 
         if(!$response->success){
@@ -482,10 +482,10 @@ class ImportWooOrders extends Command
         $body = json_decode($response->body, true);
 
         // Obtener las order notes del pedido
-        $notes_url = "https://dev.puntacanadinnerintheskyrd.com/wp-json/wc/v3/orders/{$woocommerce_order_id}/notes";
+        $notes_url = config('woocommerce.base_url') . "/wp-json/wc/v3/orders/{$woocommerce_order_id}/notes";
         
         $notes_response = Requests::get($notes_url, [
-            'Authorization' => 'Basic ' . base64_encode('ck_86c1fcde56db9be52be54ef80cb5fdcd73655934:cs_6d8fafab71cd34b6253257457cbcca4415955658')
+            'Authorization' => config('woocommerce.auth')
         ]);
 
         $order_notes = [];
@@ -505,7 +505,7 @@ class ImportWooOrders extends Command
      */
     private function makeRequestWithRetry($url, $maxRetries = 3)
     {
-        $auth = 'Basic ' . base64_encode('ck_86c1fcde56db9be52be54ef80cb5fdcd73655934:cs_6d8fafab71cd34b6253257457cbcca4415955658');
+        $auth = config('woocommerce.auth');
         
         for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
             try {
@@ -547,9 +547,9 @@ class ImportWooOrders extends Command
      */
     private function getOrderDetailsWithRetry($woocommerce_order_id, $maxRetries = 3)
     {
-        $url = "https://dev.puntacanadinnerintheskyrd.com/wp-json/wc/v3/orders/{$woocommerce_order_id}";
+        $url = config('woocommerce.base_url') . "/wp-json/wc/v3/orders/{$woocommerce_order_id}";
 
-        $auth = 'Basic ' . base64_encode('ck_86c1fcde56db9be52be54ef80cb5fdcd73655934:cs_6d8fafab71cd34b6253257457cbcca4415955658');
+        $auth = config('woocommerce.auth');
         
         for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
             try {
@@ -573,7 +573,7 @@ class ImportWooOrders extends Command
                 $body = json_decode($response->body, true);
 
                 // Obtener las order notes del pedido
-                $notes_url = "https://dev.puntacanadinnerintheskyrd.com/wp-json/wc/v3/orders/{$woocommerce_order_id}/notes";
+                $notes_url = config('woocommerce.base_url') . "/wp-json/wc/v3/orders/{$woocommerce_order_id}/notes";
                 
                 $notes_response = Requests::get($notes_url, [
                     'Authorization' => $auth,
@@ -611,8 +611,8 @@ class ImportWooOrders extends Command
      */
     private function getAppointmentDetailsWithRetry($appointmentId, $maxRetries = 3)
     {
-        $url = "https://dev.puntacanadinnerintheskyrd.com/wp-json/wc-appointments/v1/appointments/{$appointmentId}";
-        $auth = 'Basic ' . base64_encode('ck_86c1fcde56db9be52be54ef80cb5fdcd73655934:cs_6d8fafab71cd34b6253257457cbcca4415955658');
+        $url = config('woocommerce.base_url') . "/wp-json/wc-appointments/v1/appointments/{$appointmentId}";
+        $auth = config('woocommerce.auth');
         
         for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
             try {
