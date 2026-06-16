@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cocina · Dinner in the Sky Punta Cana</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E1526; --ink-2:#172139;
+    --paper:#F6F7F9; --card:#FFFFFF; --line:#E6E9EF;
+    --text:#1B2434; --muted:#69748A;
+    --gold:#E8B544; --gold-deep:#C28F1E;
+    --coral:#FF6B57; --coral-deep:#D6492F;
+    --teal:#1FA98C; --sky:#3D7BFA;
+    --carne:#B2543B; --salmon:#E8836B; --pollo:#E8B544; --veg:#1FA98C; --vegano:#3D7BFA;
+    --r:14px; font-size:16px;            /* tipografía más grande: pantalla de cocina */
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--text);-webkit-font-smoothing:antialiased}
+  .mono{font-family:'IBM Plex Mono',monospace}
+  .wrap{max-width:1240px;margin:0 auto;padding:26px 28px 80px}
+
+  /* ===== cabecera ===== */
+  .hero{background:linear-gradient(150deg,var(--ink),var(--ink-2));border-radius:18px;color:#fff;padding:24px 28px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}
+  .hero .eyebrow{font-size:11px;letter-spacing:.22em;color:#8E9FBE;font-weight:600}
+  .hero h1{font-family:'Space Grotesk';font-size:30px;font-weight:700;margin-top:4px}
+  .hero .d{font-size:13.5px;color:#9FB0CC;margin-top:6px}
+  .hero .right{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .datebox{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:11px;padding:10px 16px;font-family:'IBM Plex Mono';font-size:14px}
+  .alergia-banner{background:rgba(255,107,87,.18);border:1px solid rgba(255,107,87,.45);border-radius:11px;padding:10px 16px;font-size:13px;font-weight:600;color:#FFAB9E}
+
+  /* ===== tabs principales ===== */
+  .maintabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+  .mt{font-family:'Space Grotesk';font-size:14px;font-weight:600;padding:11px 20px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer}
+  .mt.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .view{display:none}.view.show{display:block}
+
+  /* ===== turnos ===== */
+  .turnos{display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+  .turno{flex:1;min-width:200px;border:1.5px solid var(--line);background:var(--card);border-radius:14px;padding:14px 18px;cursor:pointer;text-align:left}
+  .turno .h{font-family:'IBM Plex Mono';font-size:20px;font-weight:600}
+  .turno .n{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .turno .p{font-family:'Space Grotesk';font-size:13px;font-weight:600;margin-top:8px;color:var(--teal)}
+  .turno.on{border-color:var(--ink);background:var(--ink);color:#fff}
+  .turno.on .n{color:#9FB0CC}.turno.on .p{color:#F3CE7E}
+
+  /* ===== check 22=22 ===== */
+  .check{border-radius:13px;padding:14px 20px;font-size:15px;font-weight:600;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  .check.ok{background:#E7F6F1;border:1.5px solid #BFE7DB;color:#0E6E58}
+  .check.bad{background:#FFF0ED;border:1.5px solid #F6C7BE;color:#9C2F1B}
+  .check .big{font-family:'Space Grotesk';font-size:22px}
+
+  /* ===== totalizador gráfico ===== */
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px;margin-bottom:16px}
+  .panel h3{font-family:'Space Grotesk';font-size:16px;font-weight:600;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+  .panel h3 small{font-size:12px;color:var(--muted);font-weight:500;font-family:'Inter'}
+  .mixbar{display:flex;height:30px;border-radius:10px;overflow:hidden;margin-bottom:16px}
+  .mixbar i{display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Space Grotesk';font-weight:700;font-size:14px}
+  .platos{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+  .plato{border-radius:13px;padding:16px;color:#fff;position:relative;overflow:hidden}
+  .plato .ic{font-size:26px}
+  .plato .ct{font-family:'Space Grotesk';font-size:38px;font-weight:700;line-height:1;margin-top:6px}
+  .plato .nm{font-size:13px;font-weight:600;margin-top:4px;opacity:.92}
+  .plato .done{font-size:11.5px;margin-top:8px;background:rgba(255,255,255,.22);border-radius:99px;padding:3px 10px;display:inline-block;font-weight:600}
+
+  /* ===== alertas especiales ===== */
+  .specials{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+  .sp-card{border-radius:var(--r);padding:18px 20px}
+  .sp-card.alg{background:#FFF0ED;border:1.5px solid #F6C7BE}
+  .sp-card.occ{background:#FBF3E0;border:1.5px solid #F4DFB8}
+  .sp-card h4{font-family:'Space Grotesk';font-size:15px;font-weight:700;margin-bottom:10px}
+  .sp-card.alg h4{color:#9C2F1B}.sp-card.occ h4{color:#8A6512}
+  .sp-item{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:14px;border-top:1px dashed rgba(0,0,0,.1)}
+  .sp-item:first-of-type{border-top:none}
+  .sp-item .seat{font-family:'IBM Plex Mono';font-size:12px;font-weight:600;background:#fff;border-radius:7px;padding:4px 9px;flex:none}
+  .sp-item b{font-weight:700}
+
+  /* ===== comanda por comensal ===== */
+  table{width:100%;border-collapse:collapse;font-size:14.5px}
+  th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+  td{padding:13px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .seatcell{font-family:'IBM Plex Mono';font-weight:600;font-size:15px}
+  .dishchip{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:13.5px;padding:6px 13px;border-radius:99px;color:#fff}
+  .modtag{display:inline-block;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:7px;background:#FFF0ED;color:#9C2F1B;border:1px solid #F6C7BE;margin:2px 3px 0 0}
+  .modtag.gold{background:#FBF3E0;color:#8A6512;border-color:#F4DFB8}
+  .stbtn{font-size:12.5px;font-weight:700;border:none;border-radius:99px;padding:8px 16px;cursor:pointer;min-width:130px}
+  .st-pend{background:#F1F3F7;color:var(--muted)}
+  .st-prep{background:#FBF3E0;color:var(--gold-deep)}
+  .st-listo{background:#E7F6F1;color:var(--teal)}
+  .courseline{display:flex;gap:0;margin:4px 0 18px;border:1px solid var(--line);border-radius:11px;overflow:hidden;font-size:12px;text-align:center}
+  .cl-i{flex:1;padding:9px 6px;border-left:1px solid var(--line);color:var(--muted)}
+  .cl-i:first-child{border-left:none}
+  .cl-i b{display:block;font-family:'IBM Plex Mono';color:var(--text);font-size:13px}
+
+  /* ===== inventario ===== */
+  .invgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-bottom:18px}
+  .inv{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px}
+  .inv .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .inv .nm{font-family:'Space Grotesk';font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px}
+  .inv .nm i{width:12px;height:12px;border-radius:4px;display:inline-block}
+  .inv .row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;color:var(--muted)}
+  .inv .row b{color:var(--text);font-family:'Space Grotesk'}
+  .stockbar{height:12px;border-radius:99px;background:#EEF1F6;overflow:hidden;margin:10px 0 6px;position:relative}
+  .stockbar i{display:block;height:100%;border-radius:99px}
+  .inv .status{font-size:12px;font-weight:700;margin-top:6px}
+  .inv .status.ok{color:var(--teal)} .inv .status.warn{color:var(--coral-deep)}
+  .compra-form{display:grid;grid-template-columns:repeat(5,1fr) auto;gap:10px;align-items:end}
+  .f label{display:block;font-size:11.5px;font-weight:600;color:var(--muted);margin-bottom:5px}
+  .f input,.f select{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px 11px;font-size:13.5px;font-family:'Inter';background:var(--card)}
+  .addbtn{font-family:'Space Grotesk';font-size:13.5px;font-weight:600;background:var(--teal);color:#fff;border:none;border-radius:10px;padding:12px 20px;cursor:pointer;white-space:nowrap}
+  .ledger td,.ledger th{font-size:13px;padding:10px 12px}
+
+  /* ===== reporte ===== */
+  .rep-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:18px}
+  .rs{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px}
+  .rs .v{font-family:'Space Grotesk';font-size:30px;font-weight:700;margin-top:4px}
+  .rs .l{font-size:12px;color:var(--muted);font-weight:600}
+  .rs .s{font-size:12px;margin-top:4px;color:var(--muted)}
+  .okb{display:inline-block;font-size:11px;font-weight:700;padding:4px 11px;border-radius:99px}
+  .okb.si{background:#E7F6F1;color:var(--teal)} .okb.no{background:#FFF0ED;color:var(--coral-deep)}
+  .conteo{width:80px;border:1.5px solid var(--line);border-radius:8px;padding:7px;font-family:'IBM Plex Mono';font-size:14px;text-align:center}
+  .repnote{background:#EBF1FF;border:1px solid #C7D8FB;border-radius:12px;padding:14px 18px;font-size:13px;color:#1D4FB8;line-height:1.65;margin-bottom:16px}
+
+  @media (max-width:840px){.specials{grid-template-columns:1fr}.compra-form{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div>
+      <div class="eyebrow">OPERACIONES · COCINA</div>
+      <h1>🔥 Cocina</h1>
+      <div class="d">Todo lo que hay que preparar, por vuelo. Los menús se bloquean 24 h antes del despegue.</div>
+    </div>
+    <div class="right">
+      <div class="alergia-banner">⚠ 3 ALERGIAS HOY — revisar antes de cada vuelo</div>
+      <div class="datebox">📅 Sábado 13 jun 2026</div>
+    </div>
+  </div>
+
+  <div class="maintabs">
+    <button class="mt on" onclick="tab('vDia',this)">🍽 Servicio del día</button>
+    <button class="mt" onclick="tab('vInv',this)">📦 Inventario semanal</button>
+    <button class="mt" onclick="tab('vRep',this)">📊 Reporte compras vs ventas</button>
+  </div>
+
+  <!-- ============ SERVICIO DEL DÍA ============ -->
+  <div class="view show" id="vDia">
+
+    <div class="turnos" id="turnos"></div>
+
+    <div class="check" id="check"></div>
+
+    <div class="panel">
+      <h3>Platos del turno <small>1 comensal = 1 plato principal. La barra debe sumar siempre el total de pax.</small></h3>
+      <div class="mixbar" id="mixbar"></div>
+      <div class="platos" id="platos"></div>
+    </div>
+
+    <div class="specials">
+      <div class="sp-card alg">
+        <h4>🚫 ALERGIAS Y TRATAMIENTOS — LEER PRIMERO</h4>
+        <div id="algs"></div>
+      </div>
+      <div class="sp-card occ">
+        <h4>🎂 OCASIONES — PREPARAR EXTRA</h4>
+        <div id="occs"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Tiempos del vuelo <small>servicio completo en 60 min de vuelo</small></h3>
+      <div class="courseline" id="courses"></div>
+
+      <h3 style="margin-top:6px">Comanda por comensal <small>toca el estado para avanzar: Pendiente → En preparación → Listo</small></h3>
+      <table>
+        <thead><tr><th>Asiento</th><th>Comensal</th><th>Plato principal</th><th>Especificaciones</th><th>Estado</th></tr></thead>
+        <tbody id="comanda"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============ INVENTARIO ============ -->
+  <div class="view" id="vInv">
+
+    <div class="repnote">📦 <b>Cómo funciona:</b> cada semana se dan de alta las compras en <b>porciones</b> (1 porción = 1 plato). El sistema descuenta automáticamente cada plato vendido y reserva las porciones de los vuelos ya confirmados. Si lo disponible no cubre lo reservado, salta la alerta roja.</div>
+
+    <div class="invgrid" id="invcards"></div>
+
+    <div class="panel">
+      <h3>＋ Dar de alta compra semanal</h3>
+      <div class="compra-form">
+        <div class="f"><label>Fecha</label><input type="date" value="2026-06-13"></div>
+        <div class="f"><label>Proveedor</label><select><option>Mercarne PC</option><option>Pesquera del Este</option><option>AgroBávaro</option></select></div>
+        <div class="f"><label>Ítem</label><select id="cItem"><option>Carne (filete)</option><option>Salmón</option><option>Pollo</option><option>Vegetariano</option><option>Vegano</option></select></div>
+        <div class="f"><label>Porciones</label><input type="number" id="cQty" value="40"></div>
+        <div class="f"><label>Costo total US$</label><input type="number" id="cCost" value="380"></div>
+        <button class="addbtn" onclick="addCompra()">Registrar compra</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Libro de compras de la semana <small>lun 8 jun — dom 14 jun</small></h3>
+      <table class="ledger">
+        <thead><tr><th>Fecha</th><th>Proveedor</th><th>Ítem</th><th>Porciones</th><th>Costo</th><th>$/porción</th></tr></thead>
+        <tbody id="ledger">
+          <tr><td class="mono">08/06</td><td>Mercarne PC</td><td>Carne (filete)</td><td><b>120</b></td><td>$1,140</td><td class="mono">$9.50</td></tr>
+          <tr><td class="mono">08/06</td><td>Pesquera del Este</td><td>Salmón</td><td><b>80</b></td><td>$920</td><td class="mono">$11.50</td></tr>
+          <tr><td class="mono">09/06</td><td>AgroBávaro</td><td>Pollo</td><td><b>90</b></td><td>$495</td><td class="mono">$5.50</td></tr>
+          <tr><td class="mono">09/06</td><td>AgroBávaro</td><td>Vegetariano</td><td><b>50</b></td><td>$240</td><td class="mono">$4.80</td></tr>
+          <tr><td class="mono">09/06</td><td>AgroBávaro</td><td>Vegano</td><td><b>25</b></td><td>$135</td><td class="mono">$5.40</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============ REPORTE ============ -->
+  <div class="view" id="vRep">
+
+    <div class="repnote">📊 Este reporte cruza automáticamente <b>compras registradas</b> contra <b>platos vendidos</b> (de las ventas reales) en el mismo período. El conteo físico del domingo cierra la semana: si compras − ventas ≠ conteo, la diferencia es <b>merma</b> y se valora al costo por porción.</div>
+
+    <div class="rep-sum">
+      <div class="rs"><div class="l">Porciones compradas</div><div class="v">365</div><div class="s">$2,930 invertidos</div></div>
+      <div class="rs"><div class="l">Platos vendidos (semana)</div><div class="v">291</div><div class="s">de 901 ventas históricas</div></div>
+      <div class="rs"><div class="l">Conciliación</div><div class="v" style="color:var(--teal)">97.3%</div><div class="s">objetivo ≥ 97%</div></div>
+      <div class="rs"><div class="l">Merma valorada</div><div class="v" style="color:var(--coral-deep)">$78</div><div class="s">8 porciones perdidas</div></div>
+    </div>
+
+    <div class="panel">
+      <h3>Conciliación por ítem <small>semana 8–14 jun · ingresa el conteo físico para cerrar</small></h3>
+      <table>
+        <thead><tr><th>Ítem</th><th>Compradas</th><th>Vendidas</th><th>Reservadas próx. vuelos</th><th>Stock teórico</th><th>Conteo físico</th><th>Estado</th></tr></thead>
+        <tbody>
+          <tr><td><b>🥩 Carne</b></td><td>120</td><td>98</td><td>14</td><td class="mono">22</td><td><input class="conteo" value="22"></td><td><span class="okb si">✓ COINCIDE</span></td></tr>
+          <tr><td><b>🐟 Salmón</b></td><td>80</td><td>61</td><td>9</td><td class="mono">19</td><td><input class="conteo" value="16"></td><td><span class="okb no">⚠ MERMA 3 ($34.50)</span></td></tr>
+          <tr><td><b>🍗 Pollo</b></td><td>90</td><td>74</td><td>11</td><td class="mono">16</td><td><input class="conteo" value="16"></td><td><span class="okb si">✓ COINCIDE</span></td></tr>
+          <tr><td><b>🥗 Vegetariano</b></td><td>50</td><td>42</td><td>5</td><td class="mono">8</td><td><input class="conteo" value="5"></td><td><span class="okb no">⚠ MERMA 3 ($14.40)</span></td></tr>
+          <tr><td><b>🌱 Vegano</b></td><td>25</td><td>16</td><td>2</td><td class="mono">9</td><td><input class="conteo" value="7"></td><td><span class="okb no">⚠ MERMA 2 ($10.80)</span></td></tr>
+        </tbody>
+      </table>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px">
+        <button class="mt">Exportar PDF</button>
+        <button class="addbtn" onclick="alert('Semana cerrada ✓\nReporte enviado a gerencia.\nLa merma quedó registrada y el stock inicial de la próxima semana se ajustó al conteo físico.')">Cerrar semana</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= DATOS ================= */
+const COLORS={Carne:'var(--carne)',Salmón:'var(--salmon)',Pollo:'var(--pollo)',Vegetariano:'var(--veg)',Vegano:'var(--vegano)'};
+const ICONS={Carne:'🥩',Salmón:'🐟',Pollo:'🍗',Vegetariano:'🥗',Vegano:'🌱'};
+
+const turnos=[
+ {h:'11:00',n:'SkyBrunch',pax:6,take:'11:00',ci:'10:15',
+  guests:[
+   {s:1,n:'Carla M.',d:'Salmón',mods:['SIN GLUTEN']},{s:2,n:'Andre B.',d:'Carne',mods:['TÉRMINO ¾']},
+   {s:3,n:'Julia R.',d:'Pollo',mods:[]},{s:4,n:'Tom S.',d:'Carne',mods:[]},
+   {s:5,n:'Tania F.',d:'Vegetariano',mods:['ALERGIA: LÁCTEOS']},{s:6,n:'Rick O.',d:'Salmón',mods:[]}],
+  occs:[]},
+ {h:'17:30',n:'Golden Hour',pax:18,take:'18:15',ci:'17:30',
+  guests:[
+   {s:1,n:'Iyana C.',d:'Carne',mods:[]},{s:2,n:'Noah P.',d:'Carne',mods:['TÉRMINO ¾']},
+   {s:3,n:'Mia L.',d:'Salmón',mods:['🎂 CUMPLEAÑOS']},{s:4,n:'Leo G.',d:'Pollo',mods:[]},
+   {s:5,n:'Sara T.',d:'Carne',mods:['ALERGIA: MANÍ']},{s:6,n:'Ben H.',d:'Salmón',mods:[]},
+   {s:7,n:'Eva D.',d:'Vegetariano',mods:[]},{s:8,n:'Max W.',d:'Carne',mods:['🎂 CUMPLEAÑOS']},
+   {s:9,n:'Ana V.',d:'Pollo',mods:['SIN GLUTEN']},{s:10,n:'Kai N.',d:'Carne',mods:[]},
+   {s:11,n:'Lia M.',d:'Salmón',mods:[]},{s:12,n:'Sam R.',d:'Carne',mods:[]},
+   {s:13,n:'Zoe K.',d:'Vegano',mods:[]},{s:14,n:'Ian F.',d:'Pollo',mods:[]},
+   {s:15,n:'Amy J.',d:'Carne',mods:[]},{s:16,n:'Jeremy L.',d:'Carne',mods:[]},
+   {s:17,n:'J. López',d:'Salmón',mods:[]},{s:18,n:'P. Núñez',d:'Pollo',mods:[]}],
+  occs:[{s:3,n:'Mia L.',t:'Pastel cumpleaños · SIN GLUTEN (confirmar con pack)'},{s:8,n:'Max W.',t:'Pastel cumpleaños estándar + show shot'}]},
+ {h:'20:00',n:'Surf & Turf',pax:22,take:'20:45',ci:'20:00',
+  guests:Array.from({length:22},(_,i)=>({s:i+1,n:'Guest '+(i+1),
+    d:['Carne','Carne','Salmón','Pollo','Carne','Vegetariano','Salmón','Carne','Pollo','Carne','Salmón','Carne','Vegano','Pollo','Carne','Salmón','Carne','Vegetariano','Pollo','Carne','Salmón','Carne'][i],
+    mods:i===4?['ALERGIA: MARISCOS']:i===12?['💍 ANIVERSARIO']:[]})),
+  occs:[{s:13,n:'Guest 13',t:'Brindis show shot aniversario + postre con mensaje'}]}
+];
+let cur=1, estados={};   // estados[turno-asiento] = 0 pend / 1 prep / 2 listo
+
+/* ================= RENDER SERVICIO ================= */
+function renderTurnos(){
+  const el=document.getElementById('turnos');el.innerHTML='';
+  turnos.forEach((t,i)=>{
+    const b=document.createElement('button');
+    b.className='turno'+(i===cur?' on':'');
+    b.innerHTML='<div class="h">'+t.h+'</div><div class="n">'+t.n+' · check-in '+t.ci+'</div><div class="p">'+t.pax+' pax · '+t.pax+' platos</div>';
+    b.onclick=()=>{cur=i;renderDia()};
+    el.appendChild(b);
+  });
+}
+function counts(t){
+  const c={};t.guests.forEach(g=>c[g.d]=(c[g.d]||0)+1);return c;
+}
+function renderDia(){
+  renderTurnos();
+  const t=turnos[cur], c=counts(t), total=t.guests.length;
+
+  // check pax = platos
+  const ck=document.getElementById('check');
+  if(total===t.pax){ck.className='check ok';ck.innerHTML='<span>✓ Comanda cuadrada: <b>'+t.pax+' comensales = '+total+' platos</b></span><span class="big">'+Object.entries(c).map(([k,v])=>ICONS[k]+' '+v).join(' · ')+'</span>'}
+  else{ck.className='check bad';ck.innerHTML='⚠ DESCUADRE: '+t.pax+' pax pero solo '+total+' platos asignados — avisar a ventas para completar menús'}
+
+  // barra apilada + tarjetas
+  const mb=document.getElementById('mixbar');mb.innerHTML='';
+  const pl=document.getElementById('platos');pl.innerHTML='';
+  Object.entries(c).forEach(([k,v])=>{
+    mb.insertAdjacentHTML('beforeend','<i style="width:'+(v/total*100)+'%;background:'+COLORS[k]+'">'+v+'</i>');
+    const done=Object.keys(estados).filter(key=>key.startsWith(cur+'-')&&estados[key]===2&&t.guests.find(g=>cur+'-'+g.s===key&&g.d===k)).length;
+    pl.insertAdjacentHTML('beforeend',
+     '<div class="plato" style="background:'+COLORS[k]+'"><span class="ic">'+ICONS[k]+'</span>'+
+     '<div class="ct">'+v+'</div><div class="nm">'+k.toUpperCase()+'</div>'+
+     '<span class="done">'+done+' / '+v+' listos</span></div>');
+  });
+
+  // alergias y ocasiones
+  const algs=t.guests.filter(g=>g.mods.some(m=>m.includes('ALERGIA')||m.includes('SIN GLUTEN')||m.includes('LÁCTEOS')));
+  document.getElementById('algs').innerHTML = algs.length
+    ? algs.map(g=>'<div class="sp-item"><span class="seat">ASIENTO '+g.s+'</span><span><b>'+g.n+'</b> · '+g.d+' — '+g.mods.join(' · ')+'</span></div>').join('')
+    : '<div class="sp-item">Sin alergias en este vuelo ✓</div>';
+  document.getElementById('occs').innerHTML = t.occs.length
+    ? t.occs.map(o=>'<div class="sp-item"><span class="seat">ASIENTO '+o.s+'</span><span><b>'+o.n+'</b> — '+o.t+'</span></div>').join('')
+    : '<div class="sp-item">Sin ocasiones especiales ✓</div>';
+
+  // tiempos del vuelo
+  const take=t.take.split(':').map(Number); const mk=m=>{const d=new Date(0,0,0,take[0],take[1]+m);return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)};
+  document.getElementById('courses').innerHTML=
+   '<div class="cl-i">Check-in<b>'+t.ci+'</b></div><div class="cl-i">Despegue<b>'+t.take+'</b></div>'+
+   '<div class="cl-i">🥗 Entrada<b>'+mk(5)+'</b></div><div class="cl-i">🍽 Principal<b>'+mk(20)+'</b></div>'+
+   '<div class="cl-i">🍰 Postre<b>'+mk(40)+'</b></div><div class="cl-i">Aterrizaje<b>'+mk(60)+'</b></div>';
+
+  // comanda
+  const cm=document.getElementById('comanda');cm.innerHTML='';
+  t.guests.forEach(g=>{
+    const key=cur+'-'+g.s, st=estados[key]||0;
+    const lbl=['PENDIENTE','EN PREPARACIÓN','✓ LISTO'][st], cls=['st-pend','st-prep','st-listo'][st];
+    const tr=document.createElement('tr');
+    tr.innerHTML='<td class="seatcell">'+g.s+'</td><td><b>'+g.n+'</b></td>'+
+     '<td><span class="dishchip" style="background:'+COLORS[g.d]+'">'+ICONS[g.d]+' '+g.d+'</span></td>'+
+     '<td>'+(g.mods.length?g.mods.map(m=>'<span class="modtag'+(m.includes('🎂')||m.includes('💍')||m.includes('TÉRMINO')?' gold':'')+'">'+m+'</span>').join(''):'<span style="color:var(--muted);font-size:12.5px">—</span>')+'</td>'+
+     '<td><button class="stbtn '+cls+'">'+lbl+'</button></td>';
+    tr.querySelector('.stbtn').onclick=()=>{estados[key]=((estados[key]||0)+1)%3;renderDia()};
+    cm.appendChild(tr);
+  });
+}
+
+/* ================= INVENTARIO ================= */
+const inv=[
+ {n:'Carne',comp:120,vend:98,res:14},
+ {n:'Salmón',comp:80,vend:61,res:9},
+ {n:'Pollo',comp:90,vend:74,res:11},
+ {n:'Vegetariano',comp:50,vend:42,res:5},
+ {n:'Vegano',comp:25,vend:16,res:2}
+];
+function renderInv(){
+  const el=document.getElementById('invcards');el.innerHTML='';
+  inv.forEach(it=>{
+    const disp=it.comp-it.vend, ok=disp>=it.res;
+    const pct=Math.min(100,disp/it.comp*100);
+    el.insertAdjacentHTML('beforeend',
+     '<div class="inv"><div class="top"><span class="nm"><i style="background:'+COLORS[it.n]+'"></i>'+ICONS[it.n]+' '+it.n+'</span>'+
+     '<span class="okb '+(ok?'si':'no')+'">'+(ok?'CUBIERTO':'COMPRAR')+'</span></div>'+
+     '<div class="row"><span>Compradas (semana)</span><b>'+it.comp+'</b></div>'+
+     '<div class="row"><span>Consumidas por ventas</span><b>−'+it.vend+'</b></div>'+
+     '<div class="row"><span>Reservadas próx. vuelos</span><b>'+it.res+'</b></div>'+
+     '<div class="stockbar"><i style="width:'+pct+'%;background:'+(ok?COLORS[it.n]:'var(--coral)')+'"></i></div>'+
+     '<div class="row"><span>Disponibles</span><b style="font-size:18px">'+disp+'</b></div>'+
+     '<div class="status '+(ok?'ok':'warn')+'">'+(ok?'✓ Cubre los vuelos confirmados':'⚠ Faltan '+(it.res-disp)+' porciones — comprar antes del viernes')+'</div></div>');
+  });
+}
+function addCompra(){
+  const item=document.getElementById('cItem').value.split(' ')[0];
+  const q=+document.getElementById('cQty').value, c=+document.getElementById('cCost').value;
+  const it=inv.find(i=>item.startsWith(i.n.slice(0,4)));if(it)it.comp+=q;
+  document.getElementById('ledger').insertAdjacentHTML('afterbegin',
+   '<tr><td class="mono">13/06</td><td>—</td><td>'+document.getElementById('cItem').value+'</td><td><b>'+q+'</b></td><td>$'+c+'</td><td class="mono">$'+(c/q).toFixed(2)+'</td></tr>');
+  renderInv();
+  alert('Compra registrada ✓ El stock disponible se actualizó y la conciliación de la semana ya la incluye.');
+}
+
+/* ================= NAV ================= */
+function tab(v,btn){
+  ['vDia','vInv','vRep'].forEach(id=>document.getElementById(id).className='view'+(id===v?' show':''));
+  document.querySelectorAll('.mt').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+}
+renderDia();renderInv();
+</script>
+</body>
+</html>

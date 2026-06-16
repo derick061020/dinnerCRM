@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reportes · Dinner in the Sky Punta Cana</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E1526; --ink-2:#172139;
+    --paper:#F6F7F9; --card:#FFFFFF; --line:#E6E9EF;
+    --text:#1B2434; --muted:#69748A;
+    --gold:#E8B544; --gold-deep:#C28F1E;
+    --coral:#FF6B57; --coral-deep:#D6492F;
+    --teal:#1FA98C; --sky:#3D7BFA; --viator:#7B5CD6; --insta:#D6308A;
+    --r:14px; font-size:15px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--text);-webkit-font-smoothing:antialiased}
+  .mono{font-family:'IBM Plex Mono',monospace}
+  .wrap{max-width:1280px;margin:0 auto;padding:28px 32px 70px}
+  h1{font-family:'Space Grotesk';font-size:28px;font-weight:700;letter-spacing:-.02em}
+  .crumb{font-size:12.5px;color:var(--muted);margin-bottom:6px}
+  .crumb a{color:var(--sky);cursor:pointer;text-decoration:none}
+
+  /* ===== selector de reportes ===== */
+  .repnav{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:20px 0 22px}
+  .rn{background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:15px 17px;cursor:pointer;text-align:left}
+  .rn:hover{border-color:#C9D2E2}
+  .rn.on{border-color:var(--ink);background:var(--ink);color:#fff}
+  .rn .ic{font-size:20px}
+  .rn b{font-family:'Space Grotesk';font-size:13.5px;display:block;margin-top:6px}
+  .rn small{font-size:11px;color:var(--muted);display:block;margin-top:3px;line-height:1.45}
+  .rn.on small{color:#9FB0CC}
+  .rn.lock{border-style:dashed}
+  .rn .lk{float:right;font-size:13px}
+
+  /* ===== toolbar export ===== */
+  .xbar{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+  .xbar .left{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .xbar label{font-size:11.5px;font-weight:600;color:var(--muted)}
+  .xbar input,.xbar select{border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:13px;font-family:'Inter'}
+  .xbtns{display:flex;gap:8px;flex-wrap:wrap}
+  .xb{font-size:12px;font-weight:700;padding:9px 15px;border-radius:9px;border:1px solid var(--line);background:var(--paper);cursor:pointer;display:flex;align-items:center;gap:6px}
+  .xb.csv{color:var(--teal)} .xb.xls{color:#1D6F42} .xb.pdf{color:var(--coral-deep)}
+  .xb.sched{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+  .view{display:none}.view.show{display:block}
+
+  /* ===== KPIs ===== */
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:13px;margin-bottom:16px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+  .kpi .l{font-size:11.5px;color:var(--muted);font-weight:600}
+  .kpi .v{font-family:'Space Grotesk';font-size:26px;font-weight:700;margin-top:5px}
+  .kpi .s{font-size:11.5px;color:var(--muted);margin-top:4px}
+  .up{color:var(--teal);font-weight:700}.warn{color:var(--coral-deep);font-weight:700}
+
+  /* ===== segmentos ===== */
+  .segs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .seg{font-size:12px;font-weight:600;padding:8px 14px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer}
+  .seg.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .seg em{font-style:normal;opacity:.7;margin-left:4px}
+
+  /* ===== tabla ===== */
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:auto}
+  table{width:100%;border-collapse:collapse;font-size:13px;min-width:980px}
+  th{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);background:#FBFCFD;white-space:nowrap}
+  td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap}
+  tbody tr:hover td{background:#FAFBFD}
+  .cl b{font-weight:600;display:block}.cl small{color:var(--muted);font-size:11px}
+  .b{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 9px;border-radius:99px}
+  .b-web{background:#EBF1FF;color:var(--sky)} .b-via{background:#F1EDFB;color:var(--viator)}
+  .b-ig{background:#FCEAF4;color:var(--insta)} .b-hot{background:#FBF3E0;color:var(--gold-deep)}
+  .b-vip{background:var(--ink);color:var(--gold)} .b-rep{background:#E7F6F1;color:var(--teal)}
+  .b-new{background:#EBF1FF;color:var(--sky)} .b-ina{background:#F1F3F7;color:var(--muted)}
+  .occ-cell{font-size:11.5px;font-weight:600;color:var(--gold-deep)}
+  .gasto{font-family:'Space Grotesk';font-weight:700}
+  .wa{font-size:11.5px;color:var(--teal);text-decoration:none;font-weight:600}
+  .ver{font-size:11.5px;font-weight:700;color:var(--sky);background:#EBF1FF;border:none;border-radius:8px;padding:6px 12px;cursor:pointer}
+  .foot{display:flex;justify-content:space-between;padding:13px 18px;font-size:12px;color:var(--muted);flex-wrap:wrap;gap:8px}
+
+  /* ===== modal cliente ===== */
+  .ovl{position:fixed;inset:0;background:rgba(14,21,38,.55);display:none;align-items:center;justify-content:center;z-index:80;padding:20px}
+  .ovl.show{display:flex}
+  .modal{background:var(--card);border-radius:18px;width:640px;max-width:100%;max-height:92vh;overflow:auto}
+  .m-h{background:linear-gradient(135deg,var(--ink),var(--ink-2));color:#fff;padding:22px 26px;border-radius:18px 18px 0 0;position:relative}
+  .m-h .nm{font-family:'Space Grotesk';font-size:20px;font-weight:700}
+  .m-h .em{font-size:12.5px;color:#9FB0CC;margin-top:4px}
+  .m-h .x{position:absolute;top:16px;right:18px;background:rgba(255,255,255,.12);border:none;color:#fff;width:30px;height:30px;border-radius:99px;cursor:pointer;font-size:14px}
+  .m-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+  .ms{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:11px;padding:10px 13px}
+  .ms .l{font-size:10px;letter-spacing:.1em;color:#8E9FBE;font-weight:700}
+  .ms .v{font-family:'Space Grotesk';font-size:17px;font-weight:700;margin-top:3px}
+  .m-b{padding:20px 26px}
+  .m-b h4{font-family:'Space Grotesk';font-size:13.5px;font-weight:700;margin:14px 0 9px}
+  .m-b h4:first-child{margin-top:0}
+  .hist{border:1px solid var(--line);border-radius:11px;padding:11px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:12.5px;gap:10px;flex-wrap:wrap}
+  .hist b{font-weight:600}.hist small{color:var(--muted);display:block;margin-top:2px}
+  .pref{display:flex;gap:8px;flex-wrap:wrap}
+  .pf{font-size:11.5px;font-weight:600;background:var(--paper);border:1px solid var(--line);border-radius:99px;padding:5px 12px}
+  .m-acts{display:flex;gap:9px;margin-top:16px;flex-wrap:wrap}
+  .ma{flex:1;min-width:150px;font-size:12.5px;font-weight:700;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--paper);cursor:pointer}
+  .ma.wa{background:#E7F6F1;border-color:#BFE7DB;color:var(--teal)}
+  .ma.gold{background:#FBF3E0;border-color:#F4DFB8;color:var(--gold-deep)}
+
+  /* ===== gerencia ===== */
+  .gate{background:var(--card);border:1.5px dashed var(--line);border-radius:18px;padding:50px 30px;text-align:center}
+  .gate .ic{font-size:40px}
+  .gate h2{font-family:'Space Grotesk';font-size:20px;margin-top:12px}
+  .gate p{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.7;max-width:480px;margin-left:auto;margin-right:auto}
+  .gate button{margin-top:18px;font-family:'Space Grotesk';font-weight:600;font-size:14px;background:var(--ink);color:#fff;border:none;border-radius:11px;padding:13px 28px;cursor:pointer}
+  .ger{display:none}
+  .ger.show{display:block}
+  .gerhead{background:linear-gradient(150deg,var(--ink),var(--ink-2));border-radius:18px;color:#fff;padding:22px 26px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+  .gerhead .t{font-family:'Space Grotesk';font-size:18px;font-weight:700}
+  .gerhead .t small{display:block;font-size:12px;color:#9FB0CC;font-family:'Inter';font-weight:500;margin-top:3px}
+  .chbar{display:flex;height:26px;border-radius:9px;overflow:hidden;margin-top:10px}
+  .chbar i{display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700}
+  .legend{display:flex;gap:14px;font-size:11.5px;color:var(--muted);margin-top:8px;flex-wrap:wrap}
+  .dot{width:8px;height:8px;border-radius:99px;display:inline-block;margin-right:5px}
+
+  @media (max-width:760px){.m-stats{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="crumb">Reportes</div>
+  <h1>Centro de Reportes</h1>
+
+  <!-- selector de reportes -->
+  <div class="repnav">
+    <button class="rn on" onclick="rep('vCli',this)"><span class="ic">👥</span><b>Clientes y remarketing</b><small>Segmentos, repetidores, ocasiones próximas</small></button>
+    <button class="rn" onclick="rep('vCan',this)"><span class="ic">📣</span><b>Ventas por canal</b><small>Web vs Viator vs Instagram vs hoteles</small></button>
+    <button class="rn" onclick="alert('Vista de ejemplo — misma estructura: KPIs + tabla + export')"><span class="ic">✈</span><b>Ocupación de vuelos</b><small>Asientos vendidos vs disponibles por slot</small></button>
+    <button class="rn" onclick="alert('Vista de ejemplo — packs vendidos, attach rate por vendedor')"><span class="ic">🎁</span><b>Packs y upsells</b><small>Attach rate, ingreso extra por ocasiones</small></button>
+    <button class="rn" onclick="alert('Conecta con el módulo Cocina — conciliación y merma')"><span class="ic">📦</span><b>Cocina e inventario</b><small>Compras vs consumo, merma valorada</small></button>
+    <button class="rn lock" onclick="rep('vGer',this)"><span class="lk">🔒</span><span class="ic">💼</span><b>Gerencia</b><small>Facturación total, márgenes y comisiones — solo admin</small></button>
+  </div>
+
+  <!-- toolbar de exportación (común a todos los reportes) -->
+  <div class="xbar">
+    <div class="left">
+      <div><label>Desde</label><br><input type="date" value="2026-05-13"></div>
+      <div><label>Hasta</label><br><input type="date" value="2026-06-13"></div>
+      <div><label>Comparar con</label><br><select><option>Período anterior</option><option>Mismo período 2025</option><option>Sin comparación</option></select></div>
+    </div>
+    <div class="xbtns">
+      <button class="xb csv" onclick="alert('Exportando CSV con los filtros y segmento activos ✓')">⬇ CSV</button>
+      <button class="xb xls" onclick="alert('Exportando Excel ✓')">⬇ Excel</button>
+      <button class="xb pdf" onclick="alert('Generando PDF con membrete de la marca ✓')">⬇ PDF</button>
+      <button class="xb sched" onclick="alert('Envío programado ✓\nEste reporte llegará cada lunes 8:00 al email de gerencia.')">🕐 Programar envío</button>
+    </div>
+  </div>
+
+  <!-- ================= REPORTE CLIENTES ================= -->
+  <div class="view show" id="vCli">
+
+    <div class="kpis">
+      <div class="kpi"><div class="l">Total clientes</div><div class="v">446</div><div class="s"><span class="up">+38</span> este mes</div></div>
+      <div class="kpi"><div class="l">Repetidores</div><div class="v">9.4%</div><div class="s">42 clientes con 2+ visitas</div></div>
+      <div class="kpi"><div class="l">Ticket promedio</div><div class="v">$383</div><div class="s">por cliente</div></div>
+      <div class="kpi"><div class="l">🎂 Cumpleaños próx. 30 días</div><div class="v">17</div><div class="s"><span class="up">oro para remarketing</span></div></div>
+      <div class="kpi"><div class="l">Reseñas dejadas</div><div class="v">61%</div><div class="s">174 sin solicitar aún</div></div>
+      <div class="kpi"><div class="l">Consentimiento marketing</div><div class="v">312</div><div class="s">contactables por WhatsApp</div></div>
+    </div>
+
+    <div class="segs" id="segs">
+      <button class="seg on" data-s="all">Todos <em>(446)</em></button>
+      <button class="seg" data-s="vip">⭐ VIP <em>(18)</em></button>
+      <button class="seg" data-s="rep">Repetidores <em>(42)</em></button>
+      <button class="seg" data-s="new">Nuevos 30d <em>(38)</em></button>
+      <button class="seg" data-s="occ">🎂 Ocasión próxima <em>(17)</em></button>
+      <button class="seg" data-s="ina">Inactivos +6m <em>(121)</em></button>
+      <button class="seg" data-s="norev">Sin reseña <em>(174)</em></button>
+    </div>
+
+    <div class="panel">
+      <table>
+        <thead><tr>
+          <th>Cliente</th><th>WhatsApp</th><th>País</th><th>Canal origen</th><th>Visitas</th>
+          <th>Última visita</th><th>Próx. ocasión</th><th>Gasto total</th><th>Reseña</th><th>Segmento</th><th></th>
+        </tr></thead>
+        <tbody id="tb"></tbody>
+      </table>
+      <div class="foot"><span id="cnt"></span><span>El gasto por cliente es operativo · la facturación agregada vive en el reporte de Gerencia 🔒</span></div>
+    </div>
+  </div>
+
+  <!-- ================= VENTAS POR CANAL ================= -->
+  <div class="view" id="vCan">
+    <div class="kpis">
+      <div class="kpi"><div class="l">Ventas del período</div><div class="v">389</div><div class="s"><span class="up">+12%</span> vs anterior</div></div>
+      <div class="kpi"><div class="l">Pax transportados</div><div class="v">1,043</div><div class="s">47 vuelos operados</div></div>
+      <div class="kpi"><div class="l">Mejor canal en volumen</div><div class="v">Web 52%</div><div class="s">203 ventas directas</div></div>
+      <div class="kpi"><div class="l">Dependencia OTA</div><div class="v warn">34%</div><div class="s">objetivo: bajar a 25%</div></div>
+    </div>
+    <div class="panel" style="padding:20px 22px;overflow:visible">
+      <b style="font-family:'Space Grotesk'">Mix de canales (ventas)</b>
+      <div class="chbar">
+        <i style="width:52%;background:var(--sky)">WEB 52%</i><i style="width:34%;background:var(--viator)">VIATOR 34%</i>
+        <i style="width:9%;background:var(--insta)">IG 9%</i><i style="width:5%;background:var(--gold)">HOTEL</i>
+      </div>
+      <div class="legend">
+        <span><i class="dot" style="background:var(--sky)"></i>Web directa · 203 ventas · sin comisión</span>
+        <span><i class="dot" style="background:var(--viator)"></i>Viator · 132 ventas · <b class="warn">comisión visible solo en Gerencia 🔒</b></span>
+        <span><i class="dot" style="background:var(--insta)"></i>Instagram · 35</span>
+        <span><i class="dot" style="background:var(--gold)"></i>Hoteles/concierge · 19</span>
+      </div>
+      <p style="font-size:12.5px;color:var(--muted);margin-top:14px;line-height:1.7">Este reporte muestra <b>volumen y mix</b> para el equipo comercial. Los montos de comisión y facturación por canal se consultan en el reporte de Gerencia.</p>
+    </div>
+  </div>
+
+  <!-- ================= GERENCIA (BLOQUEADO) ================= -->
+  <div class="view" id="vGer">
+    <div class="gate" id="gate">
+      <div class="ic">🔒</div>
+      <h2>Reporte de Gerencia</h2>
+      <p>Facturación total, ingresos por canal con comisiones, márgenes, descuentos otorgados y merma valorada. Acceso restringido por rol — los usuarios de operación y cocina no ven esta sección.</p>
+      <button onclick="document.getElementById('gate').style.display='none';document.getElementById('ger').classList.add('show')">Acceder como administrador</button>
+    </div>
+
+    <div class="ger" id="ger">
+      <div class="gerhead">
+        <div class="t">💼 Gerencia — Financiero<small>13 may – 13 jun 2026 · visible solo para rol Admin · cada acceso queda registrado</small></div>
+        <div class="xbtns">
+          <button class="xb pdf" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2)">⬇ PDF ejecutivo</button>
+        </div>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><div class="l">Facturación total</div><div class="v">$187,305</div><div class="s"><span class="up">▲ 12%</span> vs período anterior</div></div>
+        <div class="kpi"><div class="l">Comisiones OTA pagadas</div><div class="v warn">$11,840</div><div class="s">Viator · 6.3% de la facturación</div></div>
+        <div class="kpi"><div class="l">Ingreso por packs</div><div class="v">$4,030</div><div class="s">attach rate 11% · meta 20%</div></div>
+        <div class="kpi"><div class="l">Descuentos otorgados</div><div class="v">$2,115</div><div class="s">31 ventas con autorización</div></div>
+        <div class="kpi"><div class="l">Merma de cocina</div><div class="v warn">$312</div><div class="s">acumulado del mes</div></div>
+        <div class="kpi"><div class="l">Ingreso por asiento volado</div><div class="v">$142</div><div class="s">1,043 pax · 47 vuelos</div></div>
+      </div>
+      <div class="panel" style="padding:18px 22px;overflow:visible">
+        <b style="font-family:'Space Grotesk'">Facturación por canal</b>
+        <div class="chbar">
+          <i style="width:55%;background:var(--sky)">WEB $103K</i><i style="width:31%;background:var(--viator)">VIATOR $58K</i>
+          <i style="width:9%;background:var(--insta)">IG $17K</i><i style="width:5%;background:var(--gold)">$9K</i>
+        </div>
+        <p style="font-size:12.5px;color:var(--muted);margin-top:12px;line-height:1.7">💡 Lectura: cada punto que migra de Viator a venta directa ahorra ~25% de comisión. Con el mix actual, mover 30 ventas/mes a directo ≈ <b style="color:var(--teal)">+$1,000/mes</b> de margen.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL CLIENTE ===== -->
+<div class="ovl" id="ovl" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal">
+    <div class="m-h">
+      <button class="x" onclick="document.getElementById('ovl').classList.remove('show')">✕</button>
+      <div class="nm" id="mNm"></div>
+      <div class="em" id="mEm"></div>
+      <div class="m-stats">
+        <div class="ms"><div class="l">VISITAS</div><div class="v" id="mV"></div></div>
+        <div class="ms"><div class="l">GASTO TOTAL</div><div class="v" id="mG"></div></div>
+        <div class="ms"><div class="l">TICKET PROM.</div><div class="v" id="mT"></div></div>
+        <div class="ms"><div class="l">WHATSAPP</div><div class="v" id="mW" style="font-size:13px"></div></div>
+      </div>
+    </div>
+    <div class="m-b">
+      <h4>Historial de reservas</h4>
+      <div id="mHist"></div>
+      <h4>Preferencias detectadas</h4>
+      <div class="pref" id="mPref"></div>
+      <h4>Acciones de remarketing</h4>
+      <div class="m-acts">
+        <button class="ma wa">💬 Enviar oferta por WhatsApp</button>
+        <button class="ma gold">🎂 Campaña de cumpleaños</button>
+        <button class="ma">⭐ Solicitar reseña</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============ datos mock de clientes ============ */
+const cli=[
+ {n:'Zanetta Sanders',e:'zsanders55@gmail.com',w:'+1 305 ··· 8841',p:'🇺🇸 USA',ch:'web',v:2,g:1942,last:'11/06/2026',occ:'🎂 23 ago',rev:1,seg:'vip',
+  hist:[{o:'#547027',f:'03/05/2026 · Surf & Turf 20:00',m:'$1,834.47',s:'Volada'},{o:'#548467',f:'11/06/2026 · SkyBar',m:'$107.91',s:'Volada'}],
+  pref:['🍽 Menú habitual: Carne ¾','🥂 Compró Exclusive Pack','📸 Pidió fotógrafo','Mesa lado atardecer']},
+ {n:'Quanique Lewis',e:'que@lq-logistics.com',w:'+1 786 ··· 2210',p:'🇺🇸 USA',ch:'web',v:1,g:1553,last:'11/06/2026',occ:'🏢 Corporativo',rev:0,seg:'vip',
+  hist:[{o:'#546811',f:'11/06/2026 · Buyout parcial 12 pax',m:'$1,553.25',s:'Volada'}],
+  pref:['🏢 Empresa de logística — lead B2B','Pidió cotización para evento de 22 pax']},
+ {n:'Daniel Morris',e:'damimsorry_p2003@yahoo.com',w:'+1 917 ··· 4419',p:'🇺🇸 USA',ch:'ig',v:2,g:1515,last:'11/06/2026',occ:'—',rev:1,seg:'rep',
+  hist:[{o:'#545102',f:'02/04/2026 · Golden Hour',m:'$757.55',s:'Volada'},{o:'#548011',f:'11/06/2026 · Golden Hour',m:'$757.55',s:'Volada'}],
+  pref:['📸 Creador de contenido · 45K seguidores','🌱 Vegano ×2']},
+ {n:'Matthew Horizon',e:'horizonentinc@outlook.com',w:'+1 404 ··· 7733',p:'🇺🇸 USA',ch:'hot',v:1,g:1515,last:'11/06/2026',occ:'💍 Aniv. 02 jul',rev:0,seg:'occ',
+  hist:[{o:'#547900',f:'11/06/2026 · Level Up 6 pax',m:'$1,515.10',s:'Volada'}],
+  pref:['Vino vía concierge Royalton','💍 Aniversario en 19 días — campaña lista']},
+ {n:'Kianna Oates',e:'only1me.kcy@gmail.com',w:'+1 678 ··· 9912',p:'🇺🇸 USA',ch:'via',v:1,g:1451,last:'11/06/2026',occ:'—',rev:1,seg:'new',
+  hist:[{o:'#548121',f:'11/06/2026 · Surf & Turf 4 pax + Birthday Pack',m:'$1,451.88',s:'Volada'}],
+  pref:['🎂 Compró Birthday Pack','🚫 Alergia: mariscos (1 pax)']},
+ {n:'Aramide Kasumu',e:'aramidekasumu@gmail.com',w:'+44 79 ··· 8821',p:'🇬🇧 UK',ch:'web',v:3,g:1402,last:'11/06/2026',occ:'🎂 30 jun',rev:1,seg:'vip',
+  hist:[{o:'#541002',f:'12/01/2026 · SkyBrunch',m:'$467.61',s:'Volada'},{o:'#543551',f:'14/03/2026 · Golden Hour',m:'$467.61',s:'Volada'},{o:'#548200',f:'11/06/2026 · Surf & Turf',m:'$467.61',s:'Volada'}],
+  pref:['⭐ 3 visitas en 6 meses — embajadora','🎂 Cumple 30 jun — invitar con upgrade']},
+ {n:'Erin Kaye',e:'erinkayee11@gmail.com',w:'+1 512 ··· 3307',p:'🇺🇸 USA',ch:'via',v:1,g:1363,last:'11/06/2026',occ:'—',rev:0,seg:'new',
+  hist:[{o:'#548302',f:'11/06/2026 · Level Up 4 pax',m:'$1,363.59',s:'Volada'}],
+  pref:['Sin reseña aún — solicitar con foto gratis']},
+ {n:'Marilyn Narud',e:'marilynnarud@gmail.com',w:'+47 91 ··· 5520',p:'🇳🇴 Noruega',ch:'web',v:1,g:1363,last:'02/01/2026',occ:'—',rev:1,seg:'ina',
+  hist:[{o:'#539001',f:'02/01/2026 · Golden Hour 4 pax',m:'$1,363.59',s:'Volada'}],
+  pref:['Inactiva 5+ meses — campaña de reactivación']}
+];
+const CH={web:'<span class="b b-web">WEB</span>',via:'<span class="b b-via">VIATOR</span>',ig:'<span class="b b-ig">INSTAGRAM</span>',hot:'<span class="b b-hot">HOTEL</span>'};
+const SEG={vip:'<span class="b b-vip">⭐ VIP</span>',rep:'<span class="b b-rep">REPETIDOR</span>',new:'<span class="b b-new">NUEVO</span>',occ:'<span class="b b-rep" style="background:#FBF3E0;color:#C28F1E">🎂 OCASIÓN</span>',ina:'<span class="b b-ina">INACTIVO</span>'};
+
+let fseg='all';
+function renderCli(){
+  const tb=document.getElementById('tb');tb.innerHTML='';
+  const list=cli.filter(c=>{
+    if(fseg==='all')return true;
+    if(fseg==='norev')return !c.rev;
+    if(fseg==='occ')return c.occ!=='—';
+    return c.seg===fseg||(fseg==='rep'&&c.v>=2);
+  });
+  list.forEach(c=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML='<td class="cl"><b>'+c.n+'</b><small>'+c.e+'</small></td>'+
+     '<td><a class="wa" href="#">💬 '+c.w+'</a></td><td>'+c.p+'</td><td>'+CH[c.ch]+'</td>'+
+     '<td style="text-align:center;font-family:Space Grotesk;font-weight:700">'+c.v+'</td>'+
+     '<td class="mono" style="font-size:12px">'+c.last+'</td>'+
+     '<td class="occ-cell">'+c.occ+'</td><td class="gasto">$'+c.g.toLocaleString()+'</td>'+
+     '<td>'+(c.rev?'⭐ Sí':'<span style="color:var(--coral-deep);font-weight:700;font-size:11.5px">Pedir</span>')+'</td>'+
+     '<td>'+SEG[c.seg]+'</td><td><button class="ver">Ver</button></td>';
+    tr.querySelector('.ver').onclick=()=>openModal(c);
+    tb.appendChild(tr);
+  });
+  document.getElementById('cnt').textContent='Mostrando '+list.length+' de 446 clientes · el export respeta el segmento activo';
+}
+document.querySelectorAll('.seg').forEach(s=>s.onclick=()=>{
+  document.querySelectorAll('.seg').forEach(x=>x.classList.remove('on'));s.classList.add('on');
+  fseg=s.dataset.s;renderCli();
+});
+
+function openModal(c){
+  document.getElementById('mNm').textContent=c.n;
+  document.getElementById('mEm').textContent=c.e+' · '+c.p+' · canal '+c.ch.toUpperCase();
+  document.getElementById('mV').textContent=c.v;
+  document.getElementById('mG').textContent='$'+c.g.toLocaleString();
+  document.getElementById('mT').textContent='$'+Math.round(c.g/c.v).toLocaleString();
+  document.getElementById('mW').textContent=c.w;
+  document.getElementById('mHist').innerHTML=c.hist.map(h=>
+   '<div class="hist"><div><b>Orden '+h.o+'</b><small>'+h.f+'</small></div><div style="text-align:right"><b>'+h.m+'</b><small>'+h.s+'</small></div></div>').join('');
+  document.getElementById('mPref').innerHTML=c.pref.map(p=>'<span class="pf">'+p+'</span>').join('');
+  document.getElementById('ovl').classList.add('show');
+}
+
+function rep(v,btn){
+  ['vCli','vCan','vGer'].forEach(id=>document.getElementById(id).className='view'+(id===v?' show':''));
+  document.querySelectorAll('.rn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+}
+renderCli();
+</script>
+</body>
+</html>

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ventas · Dinner in the Sky Punta Cana</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E1526; --ink-2:#172139;
+    --paper:#F6F7F9; --card:#FFFFFF; --line:#E6E9EF;
+    --text:#1B2434; --muted:#69748A;
+    --gold:#E8B544; --gold-deep:#C28F1E;
+    --coral:#FF6B57; --coral-deep:#D6492F;
+    --teal:#1FA98C; --sky:#3D7BFA; --viator:#7B5CD6; --insta:#D6308A;
+    --r:14px; font-size:15px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--text);-webkit-font-smoothing:antialiased}
+  .mono{font-family:'IBM Plex Mono',monospace}
+  .wrap{max-width:1280px;margin:0 auto;padding:28px 32px 70px}
+  h1{font-family:'Space Grotesk';font-size:28px;font-weight:700;letter-spacing:-.02em}
+  .crumb{font-size:12.5px;color:var(--muted);margin-bottom:6px}
+  .crumb a{color:var(--sky);text-decoration:none;cursor:pointer}
+
+  .topbar{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+  .newbtn{font-family:'Space Grotesk';font-size:14px;font-weight:600;background:var(--ink);color:#fff;border:none;border-radius:11px;padding:12px 22px;cursor:pointer}
+  .newbtn:hover{background:var(--ink-2)}
+
+  /* ===== badges ===== */
+  .b{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:99px;white-space:nowrap}
+  .b-web{background:#EBF1FF;color:var(--sky)} .b-via{background:#F1EDFB;color:var(--viator)}
+  .b-ig{background:#FCEAF4;color:var(--insta)} .b-hotel{background:#FBF3E0;color:var(--gold-deep)}
+  .b-paid{background:#E7F6F1;color:var(--teal)} .b-pend{background:#FFF0ED;color:var(--coral-deep)}
+  .b-dep{background:#FBF3E0;color:var(--gold-deep)} .b-ref{background:#F1F3F7;color:var(--muted)}
+  .b-conf{background:#E7F6F1;color:var(--teal)} .b-proc{background:#FBF3E0;color:var(--gold-deep)}
+  .b-vol{background:#EBF1FF;color:var(--sky)} .b-can{background:#F1F3F7;color:var(--muted)}
+
+  /* ===== listado ===== */
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+  .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{font-size:12px;font-weight:600;padding:7px 13px;border-radius:99px;border:1px solid var(--line);background:var(--paper);color:var(--muted);cursor:pointer}
+  .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .search{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:9px 13px;font-size:13px;color:var(--muted);min-width:230px}
+  .search input{border:none;outline:none;font-size:13px;width:100%;font-family:'Inter'}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);background:#FBFCFD}
+  td{padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+  tbody tr{cursor:pointer}
+  tbody tr:hover td{background:#FAFBFD}
+  .cl b{font-weight:600;display:block}
+  .cl small{color:var(--muted);font-size:11.5px}
+  .slot{font-family:'IBM Plex Mono';font-size:12.5px;font-weight:500}
+  .slot small{display:block;color:var(--muted);font-size:10.5px;font-family:'Inter'}
+  .nodate{color:var(--coral-deep);font-weight:600;font-size:11.5px}
+  .tot{font-family:'Space Grotesk';font-weight:600}
+  .pax{font-family:'Space Grotesk';font-weight:600;text-align:center}
+  .peek{font-size:11.5px;font-weight:600;color:var(--sky);background:#EBF1FF;border:none;border-radius:8px;padding:6px 11px;cursor:pointer}
+  .foot{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;font-size:12.5px;color:var(--muted);flex-wrap:wrap;gap:10px}
+  .pages{display:flex;gap:6px}
+  .pg{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--card);font-size:12px;cursor:pointer;color:var(--muted)}
+  .pg.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+  /* ===== popup vista rápida ===== */
+  .pop{position:fixed;z-index:60;width:330px;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 50px rgba(14,21,38,.25);display:none;overflow:hidden}
+  .pop.show{display:block}
+  .pop-h{background:linear-gradient(135deg,var(--ink),var(--ink-2));color:#fff;padding:14px 18px}
+  .pop-h .nm{font-family:'Space Grotesk';font-weight:700;font-size:15px}
+  .pop-h .fl{font-family:'IBM Plex Mono';font-size:12px;color:#C9D5EA;margin-top:3px}
+  .pop-b{padding:14px 18px}
+  .prow{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0}
+  .prow span{color:var(--muted)} .prow b{font-weight:600;text-align:right}
+  .pop-menus{margin-top:9px;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:12px;line-height:1.7}
+  .pop-cta{display:block;width:100%;margin-top:13px;font-family:'Space Grotesk';font-size:13px;font-weight:600;background:var(--ink);color:#fff;border:none;border-radius:10px;padding:11px;cursor:pointer}
+
+  /* ===== detalle de venta ===== */
+  .view{display:none}.view.show{display:block}
+  .det-head{background:linear-gradient(135deg,var(--ink),var(--ink-2));border-radius:18px;color:#fff;padding:24px 28px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:18px}
+  .det-head .nm{font-family:'Space Grotesk';font-size:22px;font-weight:700}
+  .det-head .mt{font-size:13px;color:#9FB0CC;margin-top:5px;line-height:1.7}
+  .det-head .tot{font-family:'Space Grotesk';font-size:30px;font-weight:700;color:var(--gold)}
+  .det-acts{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+  .abtn{font-size:12.5px;font-weight:600;padding:9px 15px;border-radius:10px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#fff;cursor:pointer}
+  .abtn.wa{background:rgba(31,169,140,.25);border-color:rgba(31,169,140,.5)}
+  .abtn.danger{background:rgba(255,107,87,.18);border-color:rgba(255,107,87,.4);color:#FFAB9E}
+  .det-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px}
+  .card h3{font-family:'Space Grotesk';font-size:14px;font-weight:600;margin-bottom:12px}
+  .guest{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:13px;flex-wrap:wrap}
+  .guest:first-of-type{border-top:none}
+  .guest .gn b{font-weight:600}
+  .guest .gn small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
+  .seatchip{font-family:'IBM Plex Mono';font-size:11px;background:var(--paper);border:1px solid var(--line);border-radius:7px;padding:3px 8px}
+  .pay-row{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;color:var(--muted)}
+  .pay-row b{color:var(--text);font-weight:600}
+  .pay-row.total{border-top:1px solid var(--line);margin-top:6px;padding-top:11px;font-family:'Space Grotesk';font-size:16px}
+  .pay-row.total b{font-size:18px}
+  .tl{position:relative;padding-left:20px;font-size:12.5px}
+  .tl::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:var(--line)}
+  .tl-i{position:relative;padding:7px 0 7px 6px;color:var(--muted)}
+  .tl-i::before{content:"";position:absolute;left:-19px;top:12px;width:10px;height:10px;border-radius:99px;background:var(--card);border:2.5px solid var(--sky)}
+  .tl-i b{color:var(--text);font-weight:600}
+  .upsell{background:#FBF3E0;border:1px solid #F4DFB8;border-radius:12px;padding:13px 15px;font-size:12.5px;color:#8A6512;line-height:1.6;margin-top:12px}
+  .upsell button{margin-top:8px;font-size:12px;font-weight:600;background:var(--gold);border:none;border-radius:8px;padding:8px 14px;cursor:pointer;color:#3A2B05}
+
+  /* ===== crear venta ===== */
+  .steps{display:flex;flex-direction:column;gap:16px;max-width:860px}
+  .step{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px}
+  .step h3{font-family:'Space Grotesk';font-size:15px;font-weight:600;display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .stn{width:24px;height:24px;border-radius:99px;background:var(--ink);color:#fff;font-size:12px;display:inline-flex;align-items:center;justify-content:center;font-family:'Space Grotesk'}
+  .step p.hint{font-size:12px;color:var(--muted);margin-bottom:14px}
+  .frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+  .frow.three{grid-template-columns:1fr 1fr 1fr}
+  .f label{display:block;font-size:11.5px;font-weight:600;color:var(--muted);margin-bottom:5px}
+  .f input,.f select,.f textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px 11px;font-size:13px;font-family:'Inter';background:var(--card)}
+  .slotpick{display:flex;gap:9px;flex-wrap:wrap}
+  .sp{border:1px solid var(--line);border-radius:11px;padding:10px 15px;cursor:pointer;background:var(--paper);text-align:left}
+  .sp .h{font-family:'IBM Plex Mono';font-size:14px;font-weight:600}
+  .sp .a{font-size:11px;margin-top:3px;color:var(--teal);font-weight:600}
+  .sp .a.low{color:var(--coral-deep)}
+  .sp.on{border-color:var(--ink);background:var(--ink);color:#fff}
+  .sp.on .a{color:#5BD6BB}
+  .sp.full{opacity:.45;cursor:not-allowed}
+  .gst{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:10px;margin-bottom:10px;align-items:end}
+  .packs{display:flex;gap:10px;flex-wrap:wrap}
+  .pk{border:1.5px solid var(--line);border-radius:12px;padding:12px 15px;cursor:pointer;min-width:180px;background:var(--paper)}
+  .pk.on{border-color:var(--gold);background:#FBF3E0}
+  .pk b{font-family:'Space Grotesk';font-size:13px;display:block}
+  .pk small{font-size:11px;color:var(--muted);display:block;margin-top:3px;line-height:1.5}
+  .pk .pp{font-family:'Space Grotesk';font-weight:700;color:var(--gold-deep);margin-top:6px;display:block}
+  .summary{position:sticky;bottom:0;background:var(--ink);border-radius:16px;color:#fff;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:18px}
+  .summary .bk{font-size:12px;color:#9FB0CC;line-height:1.7}
+  .summary .tt{font-family:'Space Grotesk';font-size:26px;font-weight:700;color:var(--gold)}
+  .summary .tt small{font-size:12px;color:#9FB0CC;display:block;font-family:'Inter';font-weight:500}
+  .crear{font-family:'Space Grotesk';font-size:14px;font-weight:600;background:var(--gold);color:#3A2B05;border:none;border-radius:11px;padding:13px 26px;cursor:pointer}
+  .stepper{display:inline-flex;align-items:center;gap:0;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  .stepper button{width:34px;height:38px;border:none;background:var(--paper);cursor:pointer;font-size:16px;color:var(--muted)}
+  .stepper span{width:44px;text-align:center;font-family:'Space Grotesk';font-weight:700;font-size:15px}
+
+  @media (max-width:900px){.det-grid{grid-template-columns:1fr}.frow,.frow.three,.gst{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ================= LISTADO ================= -->
+  <div class="view show" id="vList">
+    <div class="topbar">
+      <div>
+        <div class="crumb">Gestión / Ventas</div>
+        <h1>Ventas</h1>
+      </div>
+      <button class="newbtn" onclick="go('vCreate')">+ Nueva venta manual</button>
+    </div>
+
+    <div class="panel">
+      <div class="toolbar">
+        <div class="chips">
+          <button class="chip on">Todas (901)</button>
+          <button class="chip">Confirmadas</button>
+          <button class="chip">Sin pagar (28)</button>
+          <button class="chip">Sin fecha (4)</button>
+          <button class="chip">Voladas</button>
+          <button class="chip">Canceladas</button>
+          <button class="chip">Hoy ✈</button>
+        </div>
+        <div class="search">🔎 <input placeholder="Cliente, teléfono, # de venta…"></div>
+      </div>
+
+      <table>
+        <thead><tr>
+          <th>Vuelo</th><th>Cliente</th><th style="text-align:center">Pax</th><th>Experiencia</th>
+          <th>Canal</th><th>Hotel / Pickup</th><th>Pago</th><th>Total</th><th>Estado</th><th></th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+
+      <div class="foot">
+        <span>Mostrando 1–10 de 901 ventas · <b style="color:var(--text)">$187,305.60</b> en el período</span>
+        <div class="pages">
+          <button class="pg on">1</button><button class="pg">2</button><button class="pg">3</button>
+          <button class="pg">…</button><button class="pg">91</button><button class="pg">›</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= DETALLE ================= -->
+  <div class="view" id="vDetail">
+    <div class="topbar">
+      <div>
+        <div class="crumb"><a onclick="go('vList')">← Ventas</a> / Detalle</div>
+        <h1 id="dTitle">Venta #574.807</h1>
+      </div>
+    </div>
+
+    <div class="det-head">
+      <div>
+        <div class="nm" id="dName">Naomi Beckford · 4 pax</div>
+        <div class="mt" id="dMeta">✈ Surf &amp; Turf Night · Jue 18 jun · Check-in 19:30 / Despegue 20:15 · Asientos 4–7<br>📱 +1 708 298 2881 · naomi.b@gmail.com · Canal: Web</div>
+        <div class="det-acts">
+          <button class="abtn wa">💬 WhatsApp</button>
+          <button class="abtn">📧 Reenviar confirmación</button>
+          <button class="abtn">💳 Enviar link de pago</button>
+          <button class="abtn">📅 Reagendar</button>
+          <button class="abtn danger" onclick="alert('Cancelar requiere motivo:\n· Solicitud del cliente (aplica política 72h)\n· Clima\n· No pago\n· Otro')">✕ Cancelar venta</button>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <span class="b b-dep" style="font-size:11px">DEPÓSITO 50%</span>
+        <div class="tot">$606.04</div>
+        <div style="font-size:12px;color:#FFAB9E;margin-top:4px">Pendiente: $303.02 · vence en 48 h</div>
+      </div>
+    </div>
+
+    <div class="det-grid">
+      <div>
+        <div class="card">
+          <h3>Huéspedes y menús</h3>
+          <div class="guest"><div class="gn"><b>Naomi Beckford</b><small>Titular · 🍽 Carne — Filete al grill</small></div><span class="seatchip">ASIENTO 4</span></div>
+          <div class="guest"><div class="gn"><b>Marcus Beckford</b><small>🍽 Salmón glaseado de coco · 🚫 Alergia: maní</small></div><span class="seatchip">ASIENTO 5</span></div>
+          <div class="guest"><div class="gn"><b>Denise Old</b><small>🥗 Vegetariano — Risotto · 🎂 Cumpleaños</small></div><span class="seatchip">ASIENTO 6</span></div>
+          <div class="guest"><div class="gn"><b>Por confirmar</b><small>Menú sin elegir — recordatorio automático enviado</small></div><span class="seatchip">ASIENTO 7</span></div>
+
+          <div class="upsell">
+            🎂 <b>Hay un cumpleaños en esta venta y no tiene pack.</b> Birthday Pack ($99): pastel, transporte VIP, fotos y show shot.
+            <br><button>Ofrecer por WhatsApp →</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h3>Transporte incluido (shuttle)</h3>
+          <div class="pay-row"><span>Hotel de recogida</span><b>Dreams Flora Resort · Lobby principal</b></div>
+          <div class="pay-row"><span>Hora de pickup</span><b class="mono">18:35 (55 min antes del check-in)</b></div>
+          <div class="pay-row"><span>Estado</span><b style="color:var(--teal)">Asignado · Van #2</b></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <h3>Pago</h3>
+          <div class="pay-row"><span>Surf &amp; Turf × 4 pax</span><b>$556.04</b></div>
+          <div class="pay-row"><span>Upgrade vista premium</span><b>$50.00</b></div>
+          <div class="pay-row"><span>Pagado (Stripe · tarjeta ····4421)</span><b style="color:var(--teal)">−$303.02</b></div>
+          <div class="pay-row total"><span>Saldo pendiente</span><b style="color:var(--coral-deep)">$303.02</b></div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h3>Notas internas</h3>
+          <p style="font-size:12.5px;color:var(--muted);line-height:1.7">Cliente pidió mesa lado atardecer. Confirmar pastel sin gluten si toma el pack. — María, 10/06</p>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h3>Actividad</h3>
+          <div class="tl">
+            <div class="tl-i"><b>Recordatorio de saldo enviado</b> · WhatsApp · hoy 09:12</div>
+            <div class="tl-i"><b>Depósito 50% recibido</b> · Stripe · 02/06 21:44</div>
+            <div class="tl-i"><b>Venta creada</b> · web checkout · 02/06 21:40</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= CREAR VENTA ================= -->
+  <div class="view" id="vCreate">
+    <div class="topbar">
+      <div>
+        <div class="crumb"><a onclick="go('vList')">← Ventas</a> / Nueva venta</div>
+        <h1>Nueva venta manual</h1>
+      </div>
+    </div>
+
+    <div class="steps">
+
+      <div class="step">
+        <h3><span class="stn">1</span> Vuelo</h3>
+        <p class="hint">El sistema solo muestra slots con asientos disponibles. El precio lo define el slot — no se escribe a mano.</p>
+        <div class="frow">
+          <div class="f"><label>Experiencia</label>
+            <select id="cExp" onchange="calc()">
+              <option data-p="139">Surf &amp; Turf Night — $139/pax</option>
+              <option data-p="135">Golden Hour Sunset — $135/pax</option>
+              <option data-p="99">SkyBrunch — $99/pax</option>
+              <option data-p="185">Level Up Experience — $185/pax</option>
+            </select></div>
+          <div class="f"><label>Fecha</label><input type="date" value="2026-06-18"></div>
+        </div>
+        <div class="f"><label>Slot (disponibilidad en vivo)</label>
+          <div class="slotpick">
+            <div class="sp" onclick="pick(this)"><div class="h">17:30</div><div class="a">9 libres</div></div>
+            <div class="sp on" onclick="pick(this)"><div class="h">20:00</div><div class="a low">4 libres</div></div>
+            <div class="sp full"><div class="h">22:00</div><div class="a low">COMPLETO · lista de espera</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <h3><span class="stn">2</span> Huéspedes</h3>
+        <p class="hint">Menú y restricciones por persona — esto alimenta cocina y el mapa de asientos.</p>
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+          <label style="font-size:12px;font-weight:600;color:var(--muted)">Cantidad de pax</label>
+          <div class="stepper"><button onclick="pax(-1)">−</button><span id="paxN">2</span><button onclick="pax(1)">+</button></div>
+          <span style="font-size:12px;color:var(--teal);font-weight:600" id="paxOk">✓ Caben en el slot elegido</span>
+        </div>
+        <div id="guests"></div>
+      </div>
+
+      <div class="step">
+        <h3><span class="stn">3</span> Extras y ocasión</h3>
+        <div class="packs">
+          <div class="pk" data-p="69" onclick="tg(this)"><b>Exclusive Pack</b><small>Flores · transporte VIP · postre personalizado · fotos</small><span class="pp">+$69</span></div>
+          <div class="pk" data-p="79" onclick="tg(this)"><b>Anniversary Pack</b><small>Brindis show shot · souvenir · fotos</small><span class="pp">+$79</span></div>
+          <div class="pk" data-p="99" onclick="tg(this)"><b>Birthday Pack</b><small>Pastel · transporte VIP · fotos · show shot</small><span class="pp">+$99</span></div>
+        </div>
+        <div class="frow" style="margin-top:14px">
+          <div class="f"><label>Hotel de recogida (shuttle incluido)</label><input placeholder="Ej: Dreams Flora Resort"></div>
+          <div class="f"><label>Ocasión especial</label>
+            <select><option>Ninguna</option><option>Cumpleaños 🎂</option><option>Aniversario 💍</option><option>Pedida de mano 💎</option><option>Corporativo 🏢</option></select></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <h3><span class="stn">4</span> Cliente y canal</h3>
+        <div class="frow three">
+          <div class="f"><label>Nombre completo *</label><input placeholder="Nombre del titular"></div>
+          <div class="f"><label>WhatsApp *</label><input placeholder="+1 ___ ___ ____"></div>
+          <div class="f"><label>Email</label><input placeholder="para la confirmación"></div>
+        </div>
+        <div class="frow">
+          <div class="f"><label>Canal de la venta *</label>
+            <select><option>WhatsApp directo</option><option>Teléfono</option><option>Walk-in</option><option>Hotel / concierge</option><option>Viator (manual)</option><option>Instagram DM</option></select></div>
+          <div class="f"><label>Vendedor</label><select><option>María G.</option><option>Miguel</option><option>Luis P.</option></select></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <h3><span class="stn">5</span> Pago</h3>
+        <div class="frow three">
+          <div class="f"><label>Método</label>
+            <select><option>Link de pago (Stripe) →</option><option>Tarjeta presencial</option><option>Efectivo en sitio</option><option>Transferencia</option><option>Cortesía / Influencer (requiere admin)</option></select></div>
+          <div class="f"><label>Modalidad</label>
+            <select onchange="calc()" id="cMode"><option data-f="1">Pago total</option><option data-f="0.5">Depósito 50%</option></select></div>
+          <div class="f"><label>Descuento autorizado</label>
+            <select onchange="calc()" id="cDisc"><option data-d="0">Sin descuento</option><option data-d="0.10">−10% · gerencia</option><option data-d="0.15">−15% · promo flash</option></select></div>
+        </div>
+        <div class="f"><label>Nota interna</label><textarea rows="2" placeholder="Visible solo para el staff"></textarea></div>
+      </div>
+
+      <div class="summary">
+        <div class="bk" id="bk"></div>
+        <div style="display:flex;align-items:center;gap:20px">
+          <div class="tt" id="tt">$278<small>calculado automáticamente</small></div>
+          <button class="crear" onclick="alert('Venta creada ✓\n· Asientos bloqueados en el mapa\n· Confirmación enviada por WhatsApp y email\n· Comanda enviada a cocina')">Crear venta</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===== POPUP VISTA RÁPIDA ===== -->
+<div class="pop" id="pop">
+  <div class="pop-h"><div class="nm" id="pNm"></div><div class="fl" id="pFl"></div></div>
+  <div class="pop-b">
+    <div class="prow"><span>Pax</span><b id="pPax"></b></div>
+    <div class="prow"><span>Canal</span><b id="pCh"></b></div>
+    <div class="prow"><span>Pago</span><b id="pPay"></b></div>
+    <div class="prow"><span>Hotel / pickup</span><b id="pHot"></b></div>
+    <div class="pop-menus" id="pMen"></div>
+    <button class="pop-cta" id="pOpen">Abrir venta completa →</button>
+  </div>
+</div>
+
+<script>
+/* ---------- datos mock ---------- */
+const CH={web:'<span class="b b-web">WEB</span>',via:'<span class="b b-via">VIATOR</span>',ig:'<span class="b b-ig">INSTAGRAM</span>',hot:'<span class="b b-hotel">HOTEL</span>'};
+const PAY={paid:'<span class="b b-paid">PAGADO</span>',pend:'<span class="b b-pend">SIN PAGAR</span>',dep:'<span class="b b-dep">DEPÓSITO 50%</span>'};
+const ST={conf:'<span class="b b-conf">CONFIRMADA</span>',proc:'<span class="b b-proc">EN PROCESO</span>',vol:'<span class="b b-vol">VOLADA</span>',can:'<span class="b b-can">CANCELADA</span>'};
+
+const sales=[
+ {id:'574.899',cl:'William Hart',tel:'+1 631 579 2322',pax:2,exp:'Surf & Turf',ch:'ig',hot:'Pickup propio',pay:'paid',tot:'303.02',st:'proc',fl:'02/07 · 19:30',sl:'Night',men:'1 Carne · 1 Salmón',occ:''},
+ {id:'574.849',cl:'Gabrielle Velez',tel:'+1 646 939 1877',pax:2,exp:'Surf & Turf',ch:'via',hot:'—',pay:'pend',tot:'232.44',st:'proc',fl:null,sl:'',men:'Menús sin elegir',occ:''},
+ {id:'574.815',cl:'Jennifer Sloane',tel:'+1 717 979 7044',pax:2,exp:'Surf & Turf',ch:'via',hot:'Dreams Flora Resort',pay:'pend',tot:'232.44',st:'conf',fl:'10/06 · 19:30',sl:'Night',men:'2 Carne',occ:''},
+ {id:'574.807',cl:'Naomi Beckford',tel:'+1 708 298 2881',pax:4,exp:'Surf & Turf',ch:'web',hot:'Dreams Flora Resort',pay:'dep',tot:'606.04',st:'conf',fl:'18/06 · 19:30',sl:'Night',men:'1 Carne · 1 Salmón · 1 Veg · 1 sin elegir',occ:'🎂'},
+ {id:'574.789',cl:'Yetunde Adewale',tel:'+47 462 808 263',pax:2,exp:'Chef Selection',ch:'via',hot:'PC Princess Adults',pay:'paid',tot:'232.44',st:'conf',fl:'14/06 · 17:30',sl:'Sunset',men:'2 Salmón',occ:''},
+ {id:'574.787',cl:'Danny Baird',tel:'+1 650 208 7963',pax:2,exp:'Chef Selection',ch:'via',hot:'Royalton Bávaro',pay:'paid',tot:'232.44',st:'vol',fl:'08/06 · 17:30',sl:'Sunset',men:'1 Pollo · 1 Carne',occ:''},
+ {id:'574.769',cl:'Zanaya Donato',tel:'+1 732 284 0876',pax:2,exp:'Chef Selection',ch:'via',hot:'Dreams Onyx',pay:'paid',tot:'232.44',st:'conf',fl:'15/06 · 17:30',sl:'Sunset',men:'2 Carne',occ:''},
+ {id:'574.767',cl:'CharDia Reynolds',tel:'+1 347 706 5907',pax:3,exp:'Chef Selection',ch:'via',hot:'Por definir',pay:'pend',tot:'348.66',st:'conf',fl:'12/06 · 17:30',sl:'Sunset',men:'3 sin elegir',occ:''},
+ {id:'574.759',cl:'Gladys Moreno',tel:'+1 323 243 2141',pax:3,exp:'Surf & Turf',ch:'web',hot:'Pickup propio',pay:'dep',tot:'417.47',st:'proc',fl:'02/08 · 19:30',sl:'Night',men:'2 Carne · 1 Veg',occ:'💍'},
+ {id:'574.741',cl:'Maribel Castro',tel:'+1 725 225 5440',pax:2,exp:'Chef Selection',ch:'via',hot:'Secrets Tides',pay:'paid',tot:'232.44',st:'conf',fl:'20/06 · 17:30',sl:'Sunset',men:'1 Salmón · 1 Pollo',occ:''}
+];
+
+const rows=document.getElementById('rows');
+sales.forEach((s,i)=>{
+  const tr=document.createElement('tr');
+  tr.innerHTML=
+   '<td>'+(s.fl?'<div class="slot">'+s.fl+'<small>'+s.sl+'</small></div>':'<span class="nodate">⚠ SIN FECHA</span>')+'</td>'+
+   '<td class="cl"><b>'+s.cl+' '+s.occ+'</b><small>#'+s.id+' · '+s.tel+'</small></td>'+
+   '<td class="pax">'+s.pax+'</td><td>'+s.exp+'</td><td>'+CH[s.ch]+'</td>'+
+   '<td style="font-size:12.5px;color:var(--muted)">'+s.hot+'</td>'+
+   '<td>'+PAY[s.pay]+'</td><td class="tot">$'+s.tot+'</td><td>'+ST[s.st]+'</td>'+
+   '<td><button class="peek">Vista rápida</button></td>';
+  tr.querySelector('.peek').onclick=e=>{e.stopPropagation();peek(e,s)};
+  tr.onclick=()=>go('vDetail');                 // clic en la fila → venta completa
+  rows.appendChild(tr);
+});
+
+function peek(e,s){
+  const p=document.getElementById('pop');
+  document.getElementById('pNm').textContent=s.cl+' '+s.occ+' · #'+s.id;
+  document.getElementById('pFl').textContent=(s.fl?('✈ '+s.exp+' · '+s.fl):'⚠ '+s.exp+' · SIN FECHA ASIGNADA');
+  document.getElementById('pPax').textContent=s.pax+' personas';
+  document.getElementById('pCh').innerHTML=CH[s.ch];
+  document.getElementById('pPay').innerHTML=PAY[s.pay]+' · $'+s.tot;
+  document.getElementById('pHot').textContent=s.hot;
+  document.getElementById('pMen').innerHTML='🍽 <b>Menús:</b> '+s.men+(s.occ?'<br>'+(s.occ==='🎂'?'🎂 Cumpleaños — sin pack, oportunidad de upsell':'💍 Aniversario — sin pack, oportunidad de upsell'):'');
+  document.getElementById('pOpen').onclick=()=>{p.classList.remove('show');go('vDetail')};
+  p.classList.add('show');
+  const x=Math.min(e.clientX-340,window.innerWidth-350), y=Math.min(e.clientY-40,window.innerHeight-330);
+  p.style.left=Math.max(12,x)+'px'; p.style.top=Math.max(12,y)+'px';
+}
+document.addEventListener('click',e=>{if(!e.target.closest('.pop')&&!e.target.classList.contains('peek'))document.getElementById('pop').classList.remove('show')});
+
+function go(v){['vList','vDetail','vCreate'].forEach(id=>document.getElementById(id).className='view'+(id===v?' show':''));window.scrollTo(0,0)}
+
+/* ---------- crear venta: cálculo automático ---------- */
+let nPax=2, packTotal=0;
+function pax(d){nPax=Math.max(1,Math.min(22,nPax+d));document.getElementById('paxN').textContent=nPax;renderGuests();calc()}
+function renderGuests(){
+  const g=document.getElementById('guests');g.innerHTML='';
+  for(let i=1;i<=nPax;i++){
+    g.insertAdjacentHTML('beforeend',
+     '<div class="gst"><div class="f"><label>Huésped '+i+(i===1?' (titular)':'')+'</label><input placeholder="Nombre"></div>'+
+     '<div class="f"><label>Menú</label><select><option>Carne</option><option>Salmón</option><option>Pollo</option><option>Vegetariano</option><option>Vegano</option></select></div>'+
+     '<div class="f"><label>Restricción / alergia</label><input placeholder="Ej: maní, gluten…"></div></div>');
+  }
+}
+function tg(el){el.classList.toggle('on');packTotal=[...document.querySelectorAll('.pk.on')].reduce((a,p)=>a+ +p.dataset.p,0);calc()}
+function pick(el){if(el.classList.contains('full'))return;document.querySelectorAll('.sp').forEach(s=>s.classList.remove('on'));el.classList.add('on');calc()}
+function calc(){
+  const price=+document.getElementById('cExp').selectedOptions[0].dataset.p;
+  const f=+document.getElementById('cMode').selectedOptions[0].dataset.f;
+  const d=+document.getElementById('cDisc').selectedOptions[0].dataset.d;
+  const base=price*nPax, sub=base+packTotal, disc=sub*d, total=(sub-disc)*f;
+  document.getElementById('bk').innerHTML=
+    'Experiencia × '+nPax+' pax: <b style="color:#fff">$'+base.toFixed(2)+'</b>'+
+    (packTotal?' · Packs: <b style="color:#fff">$'+packTotal+'</b>':'')+
+    (d?' · Descuento: <b style="color:#FFAB9E">−$'+disc.toFixed(2)+'</b>':'')+
+    (f<1?' · <b style="color:#F3CE7E">Depósito 50%</b>':'');
+  document.getElementById('tt').innerHTML='$'+total.toFixed(2)+'<small>calculado automáticamente — no editable</small>';
+}
+renderGuests();calc();
+</script>
+</body>
+</html>
