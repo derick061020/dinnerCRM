@@ -5,6 +5,8 @@ namespace App\Filament\Pages;
 use App\Models\Order;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 
 class Dashboard extends \Filament\Pages\Dashboard
 {
@@ -85,6 +87,86 @@ class Dashboard extends \Filament\Pages\Dashboard
         };
     }
 
+    /**
+     * Clima en vivo para Calle principal Downtown, Punta Cana 23000,
+     * Dominican Republic. Se usa Open-Meteo (sin API key) y se cachea
+     * 30 minutos para no llamar a la API en cada carga.
+     *
+     * Límite operativo de viento: 35 km/h.
+     */
+    protected function weather(): array
+    {
+        $fallback = [
+            'available' => false,
+            'wind' => null,
+            'temp' => null,
+            'condition' => 'Sin datos',
+            'rain' => null,
+            'operational' => true,
+            'wind_limit' => 35,
+        ];
+
+        return Cache::remember('escritorio.weather', now()->addMinutes(30), function () use ($fallback) {
+            try {
+                $res = Http::timeout(6)->get('https://api.open-meteo.com/v1/forecast', [
+                    'latitude' => 18.5818,   // Downtown Punta Cana
+                    'longitude' => -68.4055,
+                    'current' => 'temperature_2m,weather_code,wind_speed_10m,precipitation',
+                    'wind_speed_unit' => 'kmh',
+                    'timezone' => 'America/Santo_Domingo',
+                ]);
+
+                if (! $res->ok()) {
+                    return $fallback;
+                }
+
+                $cur = $res->json('current') ?? [];
+
+                if (! isset($cur['wind_speed_10m'], $cur['temperature_2m'])) {
+                    return $fallback;
+                }
+
+                $wind = (int) round($cur['wind_speed_10m']);
+                $code = (int) ($cur['weather_code'] ?? 0);
+
+                return [
+                    'available' => true,
+                    'wind' => $wind,
+                    'temp' => (int) round($cur['temperature_2m']),
+                    'condition' => $this->weatherLabel($code),
+                    'rain' => $this->weatherIsRain($code) || (float) ($cur['precipitation'] ?? 0) > 0,
+                    'operational' => $wind <= 35,
+                    'wind_limit' => 35,
+                ];
+            } catch (\Throwable $e) {
+                return $fallback;
+            }
+        });
+    }
+
+    /** Etiqueta legible para un código WMO de Open-Meteo. */
+    protected function weatherLabel(int $code): string
+    {
+        return match (true) {
+            $code === 0 => 'Despejado',
+            in_array($code, [1, 2], true) => 'Parcialmente nublado',
+            $code === 3 => 'Nublado',
+            in_array($code, [45, 48], true) => 'Niebla',
+            in_array($code, [51, 53, 55, 56, 57], true) => 'Llovizna',
+            in_array($code, [61, 63, 65, 66, 67], true) => 'Lluvia',
+            in_array($code, [71, 73, 75, 77], true) => 'Nieve',
+            in_array($code, [80, 81, 82], true) => 'Chubascos',
+            in_array($code, [95, 96, 99], true) => 'Tormenta',
+            default => 'Variable',
+        };
+    }
+
+    /** Indica si el código WMO corresponde a precipitación. */
+    protected function weatherIsRain(int $code): bool
+    {
+        return $code >= 51 && $code <= 99;
+    }
+
     public function getViewData(): array
     {
         $today = Carbon::today();
@@ -142,11 +224,13 @@ class Dashboard extends \Filament\Pages\Dashboard
         $prevStart = $now->copy()->subMonthNoOverflow()->startOfMonth();
         $prevEnd = $now->copy()->subMonthNoOverflow()->endOfMonth();
 
+        // Ingresos por fecha de pago (date_paid) para coincidir con WooCommerce Analytics;
+        // si la orden no tiene fecha de pago, cae a created_at. Ambas se conservan desde WooCommerce.
         $revMonth = (float) Order::whereIn('status', $this->paidStatuses)
-            ->whereBetween('booking_start', [$monthStart, $monthEnd])
+            ->whereRaw('COALESCE(date_paid, created_at) BETWEEN ? AND ?', [$monthStart->toDateTimeString(), $monthEnd->toDateTimeString()])
             ->sum('total');
         $revPrev = (float) Order::whereIn('status', $this->paidStatuses)
-            ->whereBetween('booking_start', [$prevStart, $prevEnd])
+            ->whereRaw('COALESCE(date_paid, created_at) BETWEEN ? AND ?', [$prevStart->toDateTimeString(), $prevEnd->toDateTimeString()])
             ->sum('total');
         $revDelta = $revPrev > 0 ? (int) round(($revMonth - $revPrev) / $revPrev * 100) : null;
 
@@ -212,8 +296,16 @@ class Dashboard extends \Filament\Pages\Dashboard
             'daySold' => $daySold,
             'dayPct' => $dayCap > 0 ? (int) round($daySold / $dayCap * 100) : 0,
             'dayRevenue' => $dayRevenue,
-            'alertNoDate' => ['count' => $paidNoDate->count(), 'sum' => (float) $paidNoDate->sum('total')],
-            'alertPendingSoon' => ['count' => $pendingSoon->count(), 'sum' => (float) $pendingSoon->sum('total')],
+            'alertNoDate' => [
+                'count' => $paidNoDate->count(),
+                'sum' => (float) $paidNoDate->sum('total'),
+                'url' => \App\Filament\Pages\VentasPage::getUrl(['filter' => 'nodate-paid']),
+            ],
+            'alertPendingSoon' => [
+                'count' => $pendingSoon->count(),
+                'sum' => (float) $pendingSoon->sum('total'),
+                'url' => \App\Filament\Pages\VentasPage::getUrl(['filter' => 'unpaid-soon']),
+            ],
             'alertReviews' => $reviewsPending,
             'revMonth' => $revMonth,
             'revDelta' => $revDelta,
@@ -222,6 +314,7 @@ class Dashboard extends \Filament\Pages\Dashboard
             'mix' => $mix,
             'attach' => $attach,
             'attention' => $attention,
+            'weather' => $this->weather(),
         ];
     }
 }

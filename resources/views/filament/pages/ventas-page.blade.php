@@ -58,6 +58,31 @@
   .vt .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
   .vt .search{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:9px 13px;font-size:13px;color:var(--muted);min-width:230px}
   .vt .search input{border:none;outline:none;font-size:13px;width:100%;font-family:'Inter';background:transparent}
+  .vt [x-cloak]{display:none!important}
+  .vt .msel-wrap{display:inline-flex;align-items:center;gap:5px}
+  .vt .msel-nav{width:36px;height:40px;border:1px solid var(--line);background:var(--card);border-radius:11px;cursor:pointer;color:var(--muted);font-size:17px;line-height:1;display:flex;align-items:center;justify-content:center;transition:transform .15s,border-color .15s,color .15s}
+  .vt .msel-nav:hover{color:var(--ink);border-color:var(--ink);transform:translateY(-1px)}
+  .vt .msel-nav:active{transform:translateY(0)}
+  .vt .msel{position:relative}
+  .vt .msel-trigger{display:inline-flex;align-items:center;gap:9px;height:40px;padding:0 16px;min-width:168px;justify-content:center;border:1px solid var(--line);background:var(--card);border-radius:11px;cursor:pointer;font-family:'Space Grotesk';font-size:13.5px;font-weight:600;color:var(--text);transition:border-color .15s,box-shadow .15s}
+  .vt .msel-trigger:hover{border-color:var(--ink)}
+  .vt .msel-trigger.active{border-color:var(--ink);box-shadow:0 0 0 3px rgba(14,21,38,.07)}
+  .vt .msel-trigger .ic{font-size:14px;line-height:1}
+  .vt .msel-trigger .chev{margin-left:2px;font-size:10px;color:var(--muted);transition:transform .22s ease}
+  .vt .msel-trigger .chev.up{transform:rotate(180deg)}
+  .vt .msel-pop{position:fixed;z-index:70;width:266px;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 48px rgba(14,21,38,.18);padding:15px}
+  .vt .msel-yr{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
+  .vt .msel-yr .y{font-family:'Space Grotesk';font-weight:700;font-size:17px;letter-spacing:-.01em}
+  .vt .msel-yr button{width:34px;height:34px;border:1px solid var(--line);background:var(--paper);border-radius:10px;cursor:pointer;color:var(--muted);font-size:16px;line-height:1;transition:transform .15s,border-color .15s,color .15s}
+  .vt .msel-yr button:hover{color:var(--ink);border-color:var(--ink);transform:translateY(-1px)}
+  .vt .msel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+  .vt .msel-m{padding:10px 0;border:1.5px solid transparent;background:var(--paper);border-radius:10px;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--text);transition:transform .13s,background .13s,color .13s,border-color .13s}
+  .vt .msel-m:hover{background:#EAEEF5;transform:translateY(-1px)}
+  .vt .msel-m.now{border-color:var(--gold)}
+  .vt .msel-m.sel{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .vt .msel-m.sel:hover{background:var(--ink-2)}
+  .vt .msel-all{width:100%;margin-top:13px;padding-top:12px;border:none;border-top:1px solid var(--line);background:transparent;color:var(--sky);font-size:12.5px;font-weight:600;cursor:pointer;transition:color .15s}
+  .vt .msel-all:hover{color:var(--ink)}
 
   .vt table{width:100%;border-collapse:collapse;font-size:13.5px}
   .vt th{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);background:#FBFCFD}
@@ -102,7 +127,7 @@
   .vt .tl-i b{color:var(--text);font-weight:600}
 
   /* crear */
-  .vt .steps{display:flex;flex-direction:column;gap:16px;max-width:900px}
+  .vt .steps{display:flex;flex-direction:column;gap:16px;max-width:900px;margin-left:auto;margin-right:auto}
   .vt .step{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px}
   .vt .step h3{font-family:'Space Grotesk';font-size:15px;font-weight:600;display:flex;align-items:center;gap:10px;margin-bottom:6px}
   .vt .stn{width:24px;height:24px;border-radius:99px;background:var(--ink);color:#fff;font-size:12px;display:inline-flex;align-items:center;justify-content:center;font-family:'Space Grotesk'}
@@ -145,6 +170,18 @@
   .vt .mbtn.gold{background:var(--gold);color:#3A2B05} .vt .mbtn.danger{background:var(--coral-deep);color:#fff}
 
   @media (max-width:900px){.vt .det-grid{grid-template-columns:1fr}.vt .frow,.vt .frow.three,.vt .gst{grid-template-columns:1fr}}
+  @media (max-width:640px){
+    .vt{font-size:14px}
+    .vt .topbar h1{font-size:23px}
+    .vt .toolbar{align-items:stretch}
+    .vt .search{min-width:0;width:100%}
+    .vt .panel{overflow-x:auto;-webkit-overflow-scrolling:touch}
+    .vt table{min-width:560px}
+    .vt .det-head{padding:20px 18px}
+    .vt .det-head .tot{font-size:25px}
+    .vt .step{padding:16px 14px}
+    .vt .pk{min-width:0;width:100%}
+  }
 </style>
 
 {{-- ============================= LISTADO ============================= --}}
@@ -168,8 +205,67 @@
         <button class="chip {{ $filter==='can'?'on':'' }}" wire:click="setFilter('can')">Canceladas ({{ $counts['can'] }})</button>
         <button class="chip {{ $filter==='today'?'on':'' }}" wire:click="setFilter('today')">Hoy ✈ ({{ $counts['today'] }})</button>
       </div>
-      <div class="search">🔎 <input placeholder="Cliente, email, # de venta…" wire:model.live.debounce.400ms="search"></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        @php $selYear = $month !== '' ? Carbon::createFromFormat('Y-m-d', $month.'-01')->year : now()->year; @endphp
+        <div class="msel-wrap">
+          <button type="button" class="msel-nav" wire:click="stepMonth(-1)" title="Mes anterior">‹</button>
+          <div class="msel"
+               x-data="{
+                 open:false,
+                 year: {{ $selYear }},
+                 x:0, y:0,
+                 place(){ const r=$refs.trig.getBoundingClientRect(); this.y=r.bottom+8; let x=r.right-266; this.x=Math.max(12, Math.min(x, window.innerWidth-278)); }
+               }"
+               @keydown.escape="open=false"
+               @scroll.window="open=false"
+               @resize.window="open=false">
+            <button type="button" class="msel-trigger" x-ref="trig" :class="{ active: open }"
+                    @click="open = !open; if (open) { year = {{ $selYear }}; place(); }">
+              <span class="ic">📅</span>
+              <span>{{ $this->monthLabel() }}</span>
+              <span class="chev" :class="{ up: open }">▾</span>
+            </button>
+
+            <div class="msel-pop" x-show="open" x-transition.origin.top :style="`top:${y}px; left:${x}px`" @click.outside="open=false" x-cloak>
+              <div class="msel-yr">
+                <button type="button" @click="year--">‹</button>
+                <span class="y" x-text="year"></span>
+                <button type="button" @click="year++">›</button>
+              </div>
+              <div class="msel-grid">
+                @foreach (['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'] as $i => $mLbl)
+                  @php $mNum = $i + 1; @endphp
+                  <button type="button" class="msel-m"
+                          :class="{
+                            sel: '{{ $month }}' === (year + '-' + String({{ $mNum }}).padStart(2,'0')),
+                            now: '{{ now()->format('Y-m') }}' === (year + '-' + String({{ $mNum }}).padStart(2,'0'))
+                          }"
+                          @click="$wire.setMonth(year, {{ $mNum }}); open = false">{{ $mLbl }}</button>
+                @endforeach
+              </div>
+              @if ($month !== '')
+                <button type="button" class="msel-all" @click="$wire.clearMonth(); open = false">Ver todos los meses</button>
+              @endif
+            </div>
+          </div>
+          <button type="button" class="msel-nav" wire:click="stepMonth(1)" title="Mes siguiente">›</button>
+        </div>
+        <div class="search">🔎 <input placeholder="Cliente, email, # de venta…" wire:model.live.debounce.400ms="search"></div>
+      </div>
     </div>
+
+    @if (in_array($filter, ['nodate-paid', 'unpaid-soon'], true))
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:11px 16px;background:#FFF7E6;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--text)">
+        <span>
+          @if ($filter === 'nodate-paid')
+            Mostrando solo <b>reservas pagadas sin fecha</b> — la alerta del Escritorio.
+          @else
+            Mostrando solo <b>pagos pendientes con reserva en las próximas 72h</b> — la alerta del Escritorio.
+          @endif
+        </span>
+        <a href="#" wire:click.prevent="setFilter('{{ $filter === 'nodate-paid' ? 'nodate' : 'unpaid' }}')" style="color:var(--sky);font-weight:600;white-space:nowrap">Ver todas →</a>
+      </div>
+    @endif
 
     @php $orders = $this->getOrders(); @endphp
     <table>
@@ -199,13 +295,20 @@
             <td><button class="peek" wire:click.stop="showQuick({{ $o->id }})">Vista rápida</button></td>
           </tr>
         @empty
-          <tr><td colspan="10" class="empty">No hay ventas que coincidan con el filtro.</td></tr>
+          <tr><td colspan="10" class="empty">
+            @if ($month !== '')
+              No hay ventas en <b>{{ $this->monthLabel() }}</b>{{ $filter !== 'all' ? ' con este filtro' : '' }}.
+              <a href="#" wire:click.prevent="clearMonth" style="color:var(--sky)">Ver todos los meses</a>
+            @else
+              No hay ventas que coincidan con el filtro.
+            @endif
+          </td></tr>
         @endforelse
       </tbody>
     </table>
 
     <div class="foot">
-      <span>Mostrando {{ $orders->count() }} de {{ $orders->total() }} ventas · <b style="color:var(--text)">{{ $money($counts['periodTotal']) }}</b> acumulado</span>
+      <span>Mostrando {{ $orders->count() }} de {{ $orders->total() }} ventas · <b style="color:var(--text)">{{ $money($counts['periodTotal']) }}</b> {{ $month !== '' ? 'en '.$this->monthLabel() : 'acumulado' }}</span>
       <div>{{ $orders->links() }}</div>
     </div>
   </div>
@@ -285,25 +388,42 @@
     <div class="det-grid">
       <div>
         <div class="card">
-          <h3>Huéspedes y menús</h3>
-          @php $seat = 1; @endphp
-          @forelse ($dishes as $d)
-            @for ($k = 0; $k < max(1,$d['qty']); $k++)
-              <div class="guest">
-                <div class="gn"><b>{{ $seat===1 ? $this->cleanName($o->customer_name).' (titular)' : 'Huésped '.$seat }}</b><small>🍽 {{ $d['name'] }}</small></div>
-                <span class="seatchip">ASIENTO {{ $seat }}</span>
+          <h3>Comensales y menús · {{ $pax }} {{ $pax === 1 ? 'persona' : 'personas' }}</h3>
+          @php $comensales = $this->comensalesOf($o); @endphp
+          @foreach ($comensales as $i => $menu)
+            <div class="guest">
+              <div class="gn">
+                <b>{{ $i===0 ? $this->cleanName($o->customer_name).' (titular)' : 'Comensal '.($i+1) }}</b>
+                @if (count($menu))
+                  @foreach ($menu as $dish)<small>🍽 {{ $dish }}</small>@endforeach
+                @else
+                  <small style="color:var(--coral-deep)">Menú por confirmar</small>
+                @endif
               </div>
-              @php $seat++; @endphp
-            @endfor
-          @empty
-            <div class="guest"><div class="gn"><b>{{ $this->cleanName($o->customer_name) }}</b><small>Menús sin detallar en la reserva</small></div><span class="seatchip">{{ $pax }} PAX</span></div>
-          @endforelse
+              <span class="seatchip">ASIENTO {{ $i+1 }}</span>
+            </div>
+          @endforeach
         </div>
+
+        @php $extras = $this->extrasOf($o); @endphp
+        @if (count($extras))
+          <div class="card" style="margin-top:16px">
+            <h3>Extras y ocasión</h3>
+            @foreach ($extras as $e)
+              <div class="pay-row"><span>🎁 {{ $e['name'] }}</span><b>× {{ $e['qty'] }}</b></div>
+            @endforeach
+          </div>
+        @endif
 
         <div class="card" style="margin-top:16px">
           <h3>Transporte / pickup</h3>
-          <div class="pay-row"><span>Hotel de recogida</span><b>{{ $this->hotelOf($o) }}</b></div>
-          <div class="pay-row"><span>Estado del pickup</span><b style="color:var(--teal)">{{ $this->hotelOf($o) === 'Pickup propio' ? 'Llega por su cuenta' : 'Shuttle por asignar' }}</b></div>
+          @php $addons = $this->addOnsOf($o); @endphp
+          @forelse ($addons as $a)
+            <div class="pay-row"><span>🚐 {{ Str::limit($a['name'], 60) }}</span><b>× {{ $a['qty'] }}</b></div>
+          @empty
+            <div class="pay-row"><span>Hotel de recogida</span><b>{{ $this->hotelOf($o) }}</b></div>
+            <div class="pay-row"><span>Estado</span><b style="color:var(--teal)">{{ $this->hotelOf($o) === 'Pickup propio' ? 'Llega por su cuenta' : 'Shuttle por asignar' }}</b></div>
+          @endforelse
         </div>
       </div>
 
@@ -394,7 +514,7 @@
     </div>
 
     <div class="step">
-      <h3><span class="stn">2</span> Huéspedes</h3>
+      <h3><span class="stn">2</span> Comensales</h3>
       <p class="hint">Menú por persona — esto alimenta cocina y la comanda.</p>
       <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
         <label style="font-size:12px;font-weight:600;color:var(--muted)">Cantidad de pax</label>
@@ -403,7 +523,7 @@
       </div>
       @foreach ($cGuests as $i => $g)
         <div class="gst">
-          <div class="f"><label>Huésped {{ $i+1 }}{{ $i===0 ? ' (titular)' : '' }}</label><input wire:model="cGuests.{{ $i }}.name" placeholder="Nombre"></div>
+          <div class="f"><label>Comensal {{ $i+1 }}{{ $i===0 ? ' (titular)' : '' }}</label><input wire:model="cGuests.{{ $i }}.name" placeholder="Nombre"></div>
           <div class="f"><label>Menú</label>
             <select wire:model="cGuests.{{ $i }}.menu">
               @foreach (\App\Filament\Pages\CocinaPage::ITEMS as $it)<option>{{ $it }}</option>@endforeach

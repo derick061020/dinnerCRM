@@ -142,8 +142,15 @@ class ImportWooOrders extends Command
                                     'booking_start' => $bookingStart ? Carbon::parse($bookingStart) : null,
                                     'booking_end' => $bookingEnd ? Carbon::parse($bookingEnd) : null,
                                     'data' => $completeData,
-                                    'created_at' => Carbon::parse($detailsData->date_created),
-                                    'updated_at' => Carbon::parse($detailsData->date_modified),
+                                    'date_paid' => ! empty($detailsData->date_paid_gmt)
+                                        ? Carbon::parse($detailsData->date_paid_gmt, 'UTC')
+                                        : (! empty($detailsData->date_paid) ? Carbon::parse($detailsData->date_paid) : null),
+                                    'created_at' => isset($detailsData->date_created_gmt)
+                                        ? Carbon::parse($detailsData->date_created_gmt, 'UTC')
+                                        : Carbon::parse($detailsData->date_created),
+                                    'updated_at' => isset($detailsData->date_modified_gmt)
+                                        ? Carbon::parse($detailsData->date_modified_gmt, 'UTC')
+                                        : Carbon::parse($detailsData->date_modified),
                                 ]
                             );
                             
@@ -313,8 +320,15 @@ class ImportWooOrders extends Command
                                     'booking_start' => $bookingStart ? Carbon::parse($bookingStart) : null,
                                     'booking_end' => $bookingEnd ? Carbon::parse($bookingEnd) : null,
                                     'data' => $completeData,
-                                    'created_at' => Carbon::parse($detailsData->date_created),
-                                    'updated_at' => Carbon::parse($detailsData->date_modified),
+                                    'date_paid' => ! empty($detailsData->date_paid_gmt)
+                                        ? Carbon::parse($detailsData->date_paid_gmt, 'UTC')
+                                        : (! empty($detailsData->date_paid) ? Carbon::parse($detailsData->date_paid) : null),
+                                    'created_at' => isset($detailsData->date_created_gmt)
+                                        ? Carbon::parse($detailsData->date_created_gmt, 'UTC')
+                                        : Carbon::parse($detailsData->date_created),
+                                    'updated_at' => isset($detailsData->date_modified_gmt)
+                                        ? Carbon::parse($detailsData->date_modified_gmt, 'UTC')
+                                        : Carbon::parse($detailsData->date_modified),
                                 ]
                             );
                             

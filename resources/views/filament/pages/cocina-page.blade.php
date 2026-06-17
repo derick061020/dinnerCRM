@@ -98,6 +98,16 @@
   .ck .empty{padding:26px;text-align:center;color:var(--muted);font-size:14px}
 
   @media (max-width:840px){.ck .compra-form{grid-template-columns:1fr 1fr}}
+  @media (max-width:640px){
+    .ck{font-size:14px}
+    .ck .hero{padding:20px 18px}
+    .ck .hero h1{font-size:23px}
+    .ck .turno{min-width:140px}
+    .ck .compra-form{grid-template-columns:1fr}
+    .ck .panel{padding:16px 14px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+    .ck table{min-width:520px}
+    .ck .stbtn{min-width:0}
+  }
 </style>
 
   {{-- ===== CABECERA ===== --}}

@@ -31,10 +31,10 @@ class StatsOverviewWidget extends BaseWidget
         // Estadísticas de ingresos
         $totalRevenue = Order::whereIn('status', ['completed', 'processing'])->sum('total');
         $monthlyRevenue = Order::whereIn('status', ['completed', 'processing'])
-            ->whereBetween('created_at', [$thisMonth, $thisMonthEnd])
+            ->whereRaw('COALESCE(date_paid, created_at) BETWEEN ? AND ?', [$thisMonth->toDateTimeString(), $thisMonthEnd->toDateTimeString()])
             ->sum('total');
         $todayRevenue = Order::whereIn('status', ['completed', 'processing'])
-            ->whereDate('created_at', $today)
+            ->whereRaw('DATE(COALESCE(date_paid, created_at)) = ?', [$today->toDateString()])
             ->sum('total');
 
         // Estadísticas de productos

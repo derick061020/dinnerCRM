@@ -2,7 +2,7 @@
     use Illuminate\Support\Str;
     use Carbon\Carbon;
     Carbon::setLocale('es');
-    $money = fn ($n) => '$' . number_format((float) $n, 0);
+    $money = fn ($n) => '$' . number_format((float) $n, 2);
     $CHB = [
         'web' => '<span class="b b-web">WEB</span>', 'via' => '<span class="b b-via">VIATOR</span>',
         'ig' => '<span class="b b-ig">INSTAGRAM</span>', 'hot' => '<span class="b b-hot">HOTEL</span>',
@@ -111,6 +111,14 @@
   .rp .pref{display:flex;gap:8px;flex-wrap:wrap}
   .rp .pf{font-size:11.5px;font-weight:600;background:var(--paper);border:1px solid var(--line);border-radius:99px;padding:5px 12px}
   .rp .empty{padding:30px;text-align:center;color:var(--muted)}
+
+  @media (max-width:640px){
+    .rp{font-size:14px}
+    .rp h1{font-size:22px}
+    .rp .xbar{align-items:stretch}
+    .rp .gate{padding:36px 20px}
+    .rp .m-b,.rp .m-h{padding-left:18px;padding-right:18px}
+  }
 </style>
 
   <div class="crumb">Reportes</div>

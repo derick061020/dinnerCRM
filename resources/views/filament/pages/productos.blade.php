@@ -128,6 +128,15 @@
 
   @media (max-width:980px){.rv .layout{grid-template-columns:1fr}.rv .grid-h{display:none}.rv .grid-r{grid-template-columns:1fr 1fr;gap:8px}}
   @media (max-width:700px){.rv .seatgrid{grid-template-columns:repeat(10,34px);grid-template-rows:repeat(5,34px);gap:6px}.rv .st{font-size:10px}}
+  @media (max-width:520px){
+    .rv{font-size:14px}
+    .rv h1{font-size:22px}
+    .rv .platform{padding:18px 12px 16px}
+    .rv .seatgrid{grid-template-columns:repeat(10,26px);grid-template-rows:repeat(5,26px);gap:4px}
+    .rv .st{font-size:8.5px;border-radius:6px 6px 9px 9px}
+    .rv .main-head,.rv .datebar,.rv .slots{padding-left:14px;padding-right:14px}
+    .rv .grid-r{grid-template-columns:1fr}
+  }
 </style>
 
   <h1>Reservas e Inventario</h1>
@@ -171,29 +180,34 @@
         </div>
 
         @if (empty($flights))
-          <div class="emptyflights">No hay reservas para <b>{{ $product?->name }}</b> el {{ $date->isoFormat('D MMM') }}.<br>Prueba otra fecha o crea una venta manual.</div>
+          <div class="emptyflights">Selecciona una experiencia para ver su plataforma.</div>
         @else
           <div class="slots">
             @foreach ($flights as $f)
-              @php $total = $f['sold']; $cls = $total>=$f['cap']?'full':($total<$f['min']?'low':'ok'); @endphp
+              @php $total = $f['sold']; $isEmpty = !empty($f['empty']); $cls = $isEmpty?'ok':($total>=$f['cap']?'full':($total<$f['min']?'low':'ok')); @endphp
               <button class="slot-tab {{ $flight['hour']===$f['hour']?'on':'' }}" wire:click="selectSlot('{{ $f['hour'] }}')">
                 <div class="h">{{ $f['hour'] }}</div>
                 <div class="n">{{ $f['name'] }}</div>
-                <div class="o {{ $cls }}">{{ $total>=$f['cap']?'COMPLETO ★':($total<$f['min']?$total.'/'.$f['cap'].' · BAJO MÍNIMO':$total.'/'.$f['cap'].' vendidos') }}</div>
+                <div class="o {{ $cls }}">{{ $isEmpty?'0/'.$f['cap'].' · libre':($total>=$f['cap']?'COMPLETO ★':($total<$f['min']?$total.'/'.$f['cap'].' · BAJO MÍNIMO':$total.'/'.$f['cap'].' vendidos')) }}</div>
               </button>
             @endforeach
           </div>
 
           @php $total = $flight['sold']; @endphp
+
+          @if (!empty($flight['empty']))
+            <div class="emptyflights" style="margin-bottom:16px">Sin reservas para <b>{{ $product?->name }}</b> el {{ $date->isoFormat('D MMM') }}{{ $flight['hour']!=='—' ? ' · '.$flight['hour'].'h' : '' }}. Plataforma libre — crea una venta o walk-in para ocupar asientos.</div>
+          @endif
+
           <div class="flightbar">
             <div class="fb">Check-in<b class="mono">{{ $flight['hour'] }}</b></div>
             <div class="fb">Ocupación<b>{{ $total }} / {{ $flight['cap'] }}</b></div>
             <div class="fb">Ingreso de la reserva<b>{{ $money($flight['revenue']) }}</b></div>
             <div class="fb">Pendiente de cobro<b class="{{ $flight['pending']>0?'warn':'ok' }}">{{ $money($flight['pending']) }}</b></div>
-            <div class="fb">Mínimo operativo<b class="{{ $total<$flight['min']?'warn':'ok' }}">{{ $flight['min'] }} pax {{ $total<$flight['min']?'· NO ALCANZADO':'· ✓' }}</b></div>
+            <div class="fb">Mínimo operativo<b class="{{ $total<$flight['min']&&empty($flight['empty'])?'warn':'ok' }}">{{ $flight['min'] }} pax {{ empty($flight['empty']) ? ($total<$flight['min']?'· NO ALCANZADO':'· ✓') : '· libre' }}</b></div>
           </div>
 
-          @if ($total < $flight['min'])
+          @if ($total < $flight['min'] && empty($flight['empty']))
             <div class="minwarn">
               <div>⚠ <b>Reserva por debajo del mínimo operativo ({{ $flight['min'] }} pax).</b> Decide antes del cierre: promo flash, consolidar o reagendar.</div>
             </div>
@@ -245,7 +259,7 @@
                 @endforeach
               </select>
               <input class="mono" type="time" wire:model="slots.{{ $i }}.start_time">
-              <input type="number" wire:model="slots.{{ $i }}.capacity">
+              <input type="number" value="{{ $slot['capacity'] }}" disabled title="La capacidad es del producto y la heredan todos los horarios" style="background:var(--paper);color:var(--muted);cursor:not-allowed">
               <span class="toggle {{ $slot['active'] ? 'on' : '' }}" wire:click="toggleSlot({{ $i }})"><span class="tg"></span>{{ $slot['active'] ? 'Abierto' : 'Cerrado' }}</span>
               <button class="del" wire:click="removeSlot({{ $i }})">Eliminar</button>
             </div>

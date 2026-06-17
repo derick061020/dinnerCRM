@@ -71,6 +71,8 @@ class Order extends Model
         'date_paid',
         'subtotal',
         'subtotal_tax',
+        'created_at',
+        'updated_at',
     ];
 
     protected $casts = [

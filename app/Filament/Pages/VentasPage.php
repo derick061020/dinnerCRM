@@ -47,6 +47,9 @@ class VentasPage extends Page
     public string $search = '';
     public string $filter = 'all';
 
+    /** Mes seleccionado en formato Y-m. Vacío = todos los meses. */
+    public string $month = '';
+
     public ?int $selectedId = null;
 
     /** Datos del modal "vista rápida" */
@@ -80,6 +83,7 @@ class VentasPage extends Page
     protected $queryString = [
         'screen' => ['except' => 'list'],
         'filter' => ['except' => 'all'],
+        'month' => ['except' => ''],
         'selectedId' => ['except' => null],
     ];
 
@@ -104,6 +108,57 @@ class VentasPage extends Page
     {
         $this->filter = $f;
         $this->resetPage();
+    }
+
+    public function updatedMonth(): void
+    {
+        $this->resetPage();
+    }
+
+    public function stepMonth(int $d): void
+    {
+        $base = $this->month !== '' ? $this->parseMonth() : Carbon::now()->startOfMonth();
+        $this->month = $base->addMonths($d)->format('Y-m');
+        $this->resetPage();
+    }
+
+    public function setMonth(int $year, int $month): void
+    {
+        $this->month = sprintf('%04d-%02d', $year, max(1, min(12, $month)));
+        $this->resetPage();
+    }
+
+    public function clearMonth(): void
+    {
+        $this->month = '';
+        $this->resetPage();
+    }
+
+    /** Parsea el mes seleccionado al inicio de mes (evita desbordes en meses cortos). */
+    protected function parseMonth(): Carbon
+    {
+        return Carbon::createFromFormat('Y-m-d', $this->month . '-01')->startOfMonth();
+    }
+
+    /** Etiqueta legible del mes seleccionado (ej: "Junio 2026"). */
+    public function monthLabel(): string
+    {
+        if ($this->month === '') {
+            return 'Todos los meses';
+        }
+
+        return Str::ucfirst($this->parseMonth()->isoFormat('MMMM YYYY'));
+    }
+
+    /** Aplica el filtro mensual por fecha de pago (date_paid), con fallback a created_at si no pagó. */
+    protected function applyMonth($q)
+    {
+        if ($this->month !== '') {
+            $date = $this->parseMonth();
+            $q->whereRaw('YEAR(COALESCE(date_paid, created_at)) = ? AND MONTH(COALESCE(date_paid, created_at)) = ?', [$date->year, $date->month]);
+        }
+
+        return $q;
     }
 
     public function go(string $screen, ?int $id = null): void
@@ -142,24 +197,101 @@ class VentasPage extends Page
         return max($pax, 1);
     }
 
-    public function dishesOf(Order $order): array
+    /**
+     * ¿Es un complemento de transporte (traslado, pickup…)? No es plato ni extra de mesa.
+     */
+    public function isAddon(string $name): bool
+    {
+        return Str::contains(Str::lower($name), [
+            'transport', 'round trip', 'roundtrip', 'transfer', 'traslado',
+            'pickup', 'pick up', 'shuttle', 'passenger', 'pasajero', 'recogida',
+        ]);
+    }
+
+    /** ¿Es un extra de ocasión (pastel, pack, champagne…)? No es un plato principal de un comensal. */
+    public function isExtra(string $name): bool
+    {
+        return Str::contains(Str::lower($name), [
+            'cake', 'pastel', 'birthday', 'cumpleaños', 'anniversary', 'aniversario',
+            'pack', 'champagne', 'champán', 'champan', 'bottle', 'botella', 'wine', 'vino',
+            'souvenir', 'photo', 'foto', 'upgrade', 'brindis', 'toast',
+        ]);
+    }
+
+    /** Items de comida de una orden, clasificados. @return array{mains:array,extras:array,addons:array} */
+    public function menuItemsOf(Order $order): array
     {
         $data = json_decode(json_encode($order->data), true);
         $items = $data['data']['line_items'] ?? [];
-        $dishes = [];
+        $mains = [];
+        $extras = [];
+        $addons = [];
+
         foreach ($items as $item) {
             foreach ($item['meta_data'] ?? [] as $meta) {
                 if (($meta['key'] ?? null) === '_pao_ids' && isset($meta['value'])) {
                     foreach ($meta['value'] as $pao) {
-                        if (($pao['key'] ?? null) !== 'Quantity') {
-                            $dishes[] = ['name' => $pao['key'], 'qty' => (int) ($pao['value'] ?? 1)];
+                        $key = $pao['key'] ?? null;
+                        if ($key === null || $key === 'Quantity') {
+                            continue;
+                        }
+                        $entry = ['name' => $key, 'qty' => (int) ($pao['value'] ?? 1)];
+                        if ($this->isAddon($key)) {
+                            $addons[] = $entry;
+                        } elseif ($this->isExtra($key)) {
+                            $extras[] = $entry;
+                        } else {
+                            $mains[] = $entry;
                         }
                     }
                 }
             }
         }
 
-        return $dishes;
+        return ['mains' => $mains, 'extras' => $extras, 'addons' => $addons];
+    }
+
+    /** Solo platos principales (para el popup de menús). */
+    public function dishesOf(Order $order): array
+    {
+        return $this->menuItemsOf($order)['mains'];
+    }
+
+    /** Extras de ocasión (pastel, pack…). */
+    public function extrasOf(Order $order): array
+    {
+        return $this->menuItemsOf($order)['extras'];
+    }
+
+    /** Complementos de transporte. */
+    public function addOnsOf(Order $order): array
+    {
+        return $this->menuItemsOf($order)['addons'];
+    }
+
+    /**
+     * Distribuye TODOS los platos principales entre los comensales (longitud = pax).
+     * Cada unidad de un plato se reparte round-robin: si un plato tiene qty = pax,
+     * todos los comensales lo reciben (combos tipo Surf & Turf); si son elecciones
+     * distintas (1+1), cada comensal recibe la suya.
+     *
+     * @return array<int, array<int, string>> índice de comensal => lista de platos
+     */
+    public function comensalesOf(Order $order): array
+    {
+        $pax = $this->paxOf($order);
+        $comensales = array_fill(0, $pax, []);
+
+        $ptr = 0;
+        foreach ($this->dishesOf($order) as $d) {
+            $units = max(1, $d['qty']);
+            for ($u = 0; $u < $units; $u++) {
+                $comensales[$ptr % $pax][] = $d['name'];
+                $ptr++;
+            }
+        }
+
+        return $comensales;
     }
 
     public function phoneOf(Order $order): ?string
@@ -248,16 +380,30 @@ class VentasPage extends Page
         $q = $this->baseQuery();
 
         $today = Carbon::today();
+        $now = Carbon::now();
 
         match ($this->filter) {
             'conf' => $q->whereIn('status', ['completed', 'processing'])->whereNotNull('booking_start'),
             'unpaid' => $q->whereIn('status', ['pending', 'a-la-espera']),
+            // Coincide con la alerta "Pagos pendientes en reservas <72h" del Escritorio.
+            'unpaid-soon' => $q->whereIn('status', ['pending', 'a-la-espera'])
+                ->whereNotNull('booking_start')
+                ->whereBetween('booking_start', [$now, $now->copy()->addHours(72)]),
             'nodate' => $q->whereNull('booking_start')->whereNotIn('status', ['cancelled', 'failed']),
+            // Coincide con la alerta "Reservas pagadas sin fecha" del Escritorio.
+            'nodate-paid' => $q->whereNull('booking_start')->whereIn('status', ['completed', 'processing']),
             'vol' => $q->where('status', 'completed')->whereDate('booking_start', '<', $today),
             'can' => $q->whereIn('status', ['cancelled', 'failed']),
             'today' => $q->whereDate('booking_start', $today),
             default => $q,
         };
+
+        // El filtro mensual (por fecha de venta) no aplica a criterios "sin fecha",
+        // a "unpaid-soon" (ventana fija de 72h) ni a "today" (día operativo absoluto:
+        // una reserva de hoy pudo venderse en otro mes).
+        if (! in_array($this->filter, ['nodate', 'nodate-paid', 'unpaid-soon', 'today'], true)) {
+            $this->applyMonth($q);
+        }
 
         if (trim($this->search) !== '') {
             $s = '%' . trim($this->search) . '%';
@@ -280,14 +426,14 @@ class VentasPage extends Page
         $today = Carbon::today();
 
         return [
-            'all' => Order::count(),
-            'conf' => Order::whereIn('status', ['completed', 'processing'])->whereNotNull('booking_start')->count(),
-            'unpaid' => Order::whereIn('status', ['pending', 'a-la-espera'])->count(),
+            'all' => $this->applyMonth(Order::query())->count(),
+            'conf' => $this->applyMonth(Order::whereIn('status', ['completed', 'processing'])->whereNotNull('booking_start'))->count(),
+            'unpaid' => $this->applyMonth(Order::whereIn('status', ['pending', 'a-la-espera']))->count(),
             'nodate' => Order::whereNull('booking_start')->whereNotIn('status', ['cancelled', 'failed'])->count(),
-            'vol' => Order::where('status', 'completed')->whereDate('booking_start', '<', $today)->count(),
-            'can' => Order::whereIn('status', ['cancelled', 'failed'])->count(),
+            'vol' => $this->applyMonth(Order::where('status', 'completed')->whereDate('booking_start', '<', $today))->count(),
+            'can' => $this->applyMonth(Order::whereIn('status', ['cancelled', 'failed']))->count(),
             'today' => Order::whereDate('booking_start', $today)->count(),
-            'periodTotal' => (float) Order::sum('total'),
+            'periodTotal' => (float) $this->applyMonth(Order::query())->sum('total'),
         ];
     }
 

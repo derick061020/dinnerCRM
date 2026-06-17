@@ -110,14 +110,32 @@ class CocinaPage extends Page
         return match (true) {
             Str::contains($n, ['vegan', 'vegano']) => 'Vegano',
             Str::contains($n, ['veget', 'risotto', 'ensalada', 'salad']) => 'Vegetariano',
-            Str::contains($n, ['salmón', 'salmon', 'pescado', 'fish', 'marisc', 'mar']) => 'Salmón',
             Str::contains($n, ['pollo', 'chicken', 'ave']) => 'Pollo',
-            Str::contains($n, ['carne', 'filet', 'mignon', 'beef', 'steak', 'res', 'turf']) => 'Carne',
+            Str::contains($n, ['salmón', 'salmon', 'pescado', 'fish', 'marisc', 'seafood', 'shrimp', 'camar']) => 'Salmón',
+            Str::contains($n, ['carne', 'filet', 'mignon', 'beef', 'steak', 'res', 'turf', 'flap', 'prime', 'ribeye']) => 'Carne',
             default => 'Carne',
         };
     }
 
-    /** Extrae los platos de una orden desde data.line_items[].meta_data _pao_ids. */
+    /**
+     * ¿Es un complemento (transporte, traslado…) y no un plato de comida?
+     * No cuenta como comensal ni como plato de cocina.
+     */
+    public function isAddon(string $name): bool
+    {
+        $n = Str::lower($name);
+
+        // Transporte/traslado o extra de ocasión (pastel, pack, champagne…): no es plato principal.
+        return Str::contains($n, [
+            'transport', 'round trip', 'roundtrip', 'transfer', 'traslado',
+            'pickup', 'pick up', 'shuttle', 'passenger', 'pasajero', 'recogida',
+            'cake', 'pastel', 'birthday', 'cumpleaños', 'anniversary', 'aniversario',
+            'pack', 'champagne', 'champán', 'champan', 'bottle', 'botella', 'wine', 'vino',
+            'souvenir', 'photo', 'foto', 'upgrade', 'brindis', 'toast',
+        ]);
+    }
+
+    /** Extrae los platos de comida de una orden desde data.line_items[].meta_data _pao_ids. */
     public function extractProducts($order): array
     {
         $orderData = json_decode(json_encode($order->data), true);
@@ -129,7 +147,7 @@ class CocinaPage extends Page
                 foreach ($item['meta_data'] ?? [] as $meta) {
                     if (($meta['key'] ?? null) === '_pao_ids' && isset($meta['value'])) {
                         foreach ($meta['value'] as $pao) {
-                            if (isset($pao['key']) && $pao['key'] !== 'Quantity') {
+                            if (isset($pao['key']) && $pao['key'] !== 'Quantity' && ! $this->isAddon($pao['key'])) {
                                 $productos[] = [
                                     'name' => $pao['key'],
                                     'quantity' => (int) ($pao['value'] ?? 1),

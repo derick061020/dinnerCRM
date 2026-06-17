@@ -1,5 +1,5 @@
 @php
-    $fmt = fn ($n) => '$' . number_format((float) $n, 0);
+    $fmt = fn ($n) => '$' . number_format((float) $n, 2);
     $pendingTotal = $attention->where('paid', false)->count();
     $noDateTotal = $attention->whereNull('date')->count();
     $viatorTotal = $attention->where('channel', 'viator')->count();
@@ -112,11 +112,27 @@
   .dits .empty-row td{text-align:center;color:var(--muted);padding:30px 14px}
 
   @media (max-width:880px){
-    .dits .flight{grid-template-columns:70px 1fr;gap:10px}
-    .dits .seats{grid-template-columns:repeat(11,12px);grid-auto-rows:12px}
-    .dits .seat{width:12px;height:12px}
-    .dits .f-occ{text-align:left;grid-column:2}
+    .dits .flight{grid-template-columns:auto 1fr;gap:6px 14px;padding:18px 0}
+    .dits .f-time{grid-column:1;grid-row:1}
+    .dits .flight>div:nth-child(2){grid-column:2;grid-row:1}
+    .dits .seats{grid-column:1/-1;margin-top:6px;grid-template-columns:repeat(11,14px);grid-auto-rows:14px}
+    .dits .seat{width:14px;height:14px}
+    .dits .f-occ{grid-column:1/-1;text-align:left;min-width:0;display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;margin-top:2px}
+    .dits .f-occ .pct{font-size:22px}
+    .dits .f-occ .pax{margin-top:0}
+    .dits .f-occ .chip{margin-top:0}
     .dits table{font-size:12.5px}
+  }
+  @media (max-width:640px){
+    .dits{font-size:14px}
+    .dits .topbar{align-items:stretch}
+    .dits .topbar h1{font-size:24px}
+    .dits .wind{width:100%;justify-content:space-around}
+    .dits .board{padding:20px 16px 18px}
+    .dits .kpi .val{font-size:23px}
+    .dits .alert .n{font-size:23px}
+    .dits .panel{overflow-x:auto;-webkit-overflow-scrolling:touch}
+    .dits table{min-width:560px}
   }
 </style>
 
@@ -128,13 +144,22 @@
     </div>
     <div class="wind">
       <div>
-        <div class="val mono">18 <span style="font-size:13px;font-weight:500">km/h</span></div>
-        <div class="lbl"><span class="ok">✓ Viento operativo</span><br><span class="limit">Límite operativo: 35 km/h</span></div>
+        <div class="val mono">{{ $weather['available'] ? $weather['wind'] : '—' }} <span style="font-size:13px;font-weight:500">km/h</span></div>
+        <div class="lbl">
+          @if(!$weather['available'])
+            <span class="limit">Clima no disponible</span><br>
+          @elseif($weather['operational'])
+            <span class="ok">✓ Viento operativo</span><br>
+          @else
+            <span style="color:#e07a5f;font-weight:600">⚠ Viento sobre el límite</span><br>
+          @endif
+          <span class="limit">Límite operativo: {{ $weather['wind_limit'] }} km/h</span>
+        </div>
       </div>
       <div style="width:1px;height:36px;background:var(--line)"></div>
       <div>
-        <div class="val">29°</div>
-        <div class="lbl">Despejado<br><span class="limit">Sin lluvia prevista hoy</span></div>
+        <div class="val">{{ $weather['available'] ? $weather['temp'].'°' : '—' }}</div>
+        <div class="lbl">{{ $weather['condition'] }}<br><span class="limit">{{ $weather['rain'] ? 'Posible lluvia hoy' : 'Sin lluvia prevista hoy' }}</span></div>
       </div>
     </div>
   </div>
@@ -187,26 +212,22 @@
       <div class="n">{{ $alertNoDate['count'] }}</div>
       <div class="t">Reservas pagadas sin fecha</div>
       <div class="d">{{ $fmt($alertNoDate['sum']) }} cobrados sin asiento asignado. No reciben recordatorios ni entran en cocina.</div>
-      <a class="act" href="/orders">Asignar fecha →</a>
+      <a class="act" href="{{ $alertNoDate['url'] }}">Asignar fecha →</a>
     </div>
     <div class="alert gold">
       <div class="n">{{ $alertPendingSoon['count'] }}</div>
       <div class="t">Pagos pendientes en reservas &lt;72h</div>
       <div class="d">Riesgo de no-show. Enviar link de pago por WhatsApp antes de liberar el asiento.</div>
-      <a class="act" href="/orders">Cobrar ahora →</a>
+      <a class="act" href="{{ $alertPendingSoon['url'] }}">Cobrar ahora →</a>
     </div>
-    <div class="alert gold">
-      <div class="n">0</div>
-      <div class="t">Ocasiones sin pack premium</div>
-      <div class="d">Sin datos de ocasiones especiales en las reservas actuales.</div>
-      <a class="act" href="/orders">Ofrecer packs →</a>
-    </div>
+    {{-- Reseñas por solicitar — pendiente de integración de envío, oculto de momento
     <div class="alert teal">
       <div class="n">{{ $alertReviews }}</div>
       <div class="t">Reseñas por solicitar</div>
-      <div class="d">Huéspedes que volaron ayer y completaron su experiencia.</div>
-      <a class="act" href="/orders">Enviar solicitud →</a>
+      <div class="d">Clientes que vivieron la experiencia ayer y la completaron.</div>
+      <a class="act" href="#">Enviar solicitud →</a>
     </div>
+    --}}
   </section>
 
   {{-- KPIs COMERCIALES --}}

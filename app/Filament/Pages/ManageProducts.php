@@ -216,10 +216,52 @@ class ManageProducts extends Page
                 'min' => 8,
                 'seats' => $seats,
                 'price' => $price,
+                'empty' => false,
             ];
         }
 
+        // Sin reservas ese día: mostramos la plataforma vacía igual, a partir de los
+        // horarios configurados para ese día (o uno por defecto) para poder operar/vender.
+        if (empty($flights)) {
+            $flights = $this->emptyFlights($product, $cap, $price);
+        }
+
         return $flights;
+    }
+
+    /** Plataformas vacías (todos los asientos libres) para una fecha sin reservas. */
+    protected function emptyFlights(Product $product, int $cap, int $price): array
+    {
+        $weekday = Carbon::parse($this->selectedDate)->dayOfWeek; // 0=Domingo … 6=Sábado
+
+        $hours = $product->timeslots()
+            ->where('active', true)
+            ->where('weekday', $weekday)
+            ->orderBy('start_time')
+            ->pluck('start_time')
+            ->map(fn ($t) => substr((string) $t, 0, 5))
+            ->unique()
+            ->values()
+            ->all();
+
+        // Si no hay horario configurado para ese día, mostramos una plataforma genérica.
+        if (empty($hours)) {
+            $hours = ['—'];
+        }
+
+        return array_map(fn ($hour) => [
+            'hour' => $hour,
+            'name' => $product->name,
+            'cap' => $cap,
+            'sold' => 0,
+            'unpaid' => 0,
+            'revenue' => 0,
+            'pending' => 0,
+            'min' => 8,
+            'seats' => array_fill(0, $cap, null),
+            'price' => $price,
+            'empty' => true,
+        ], $hours);
     }
 
     /* ======================= configuración de horarios ======================= */

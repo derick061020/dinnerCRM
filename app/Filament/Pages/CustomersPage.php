@@ -44,7 +44,7 @@ class CustomersPage extends Page
 
     public function getTitle(): string
     {
-        return 'Centro de Reportes';
+        return 'Reservas Dinner in the Sky';
     }
 
     public function getHeading(): string
@@ -261,7 +261,8 @@ class CustomersPage extends Page
 
     public function getChannelReport(): array
     {
-        $orders = Order::whereBetween('booking_start', [$this->from, $this->to . ' 23:59:59'])
+        // Reporte de ventas del rango por fecha de pago (date_paid), con fallback a created_at.
+        $orders = Order::whereRaw('COALESCE(date_paid, created_at) BETWEEN ? AND ?', [$this->from . ' 00:00:00', $this->to . ' 23:59:59'])
             ->whereNotIn('status', ['cancelled', 'failed'])
             ->get();
 
@@ -293,7 +294,8 @@ class CustomersPage extends Page
 
     public function getGerencia(): array
     {
-        $orders = Order::whereBetween('booking_start', [$this->from, $this->to . ' 23:59:59'])
+        // Ingresos/descuentos del rango por fecha de pago (date_paid), con fallback a created_at.
+        $orders = Order::whereRaw('COALESCE(date_paid, created_at) BETWEEN ? AND ?', [$this->from . ' 00:00:00', $this->to . ' 23:59:59'])
             ->whereNotIn('status', ['cancelled', 'failed'])
             ->get();
 

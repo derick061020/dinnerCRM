@@ -30,6 +30,7 @@ class PanelPanelProvider extends PanelProvider
             ->profile()
             ->brandLogo(asset('images/balck_logo.png'))
             ->darkModeBrandLogo(asset('images/logo.webp'))
+            ->favicon(asset('images/favicon-dits.png'))
             ->sidebarCollapsibleOnDesktop()
             ->colors([
                 'primary' => Color::HEX("#3b82f6"),
